@@ -4,9 +4,8 @@ const express = require("express");
 const app = express();
 const mongoose = require("mongoose");
 const logger = require("morgan");
-const User = require("./models/user");
-const Project = require("./models/project");
-const Issue = require("./models/issue");
+const cors = require("cors");
+const authRouter = require("./routes/auth-routes");
 
 mongoose.connect(process.env.MONGODB_URI);
 
@@ -14,10 +13,15 @@ mongoose.connection.on("connected", () => {
   console.log(`Connected to MongoDB ${mongoose.connection.name}.`);
 });
 
+app.use(cors());
 app.use(express.json());
 app.use(logger("dev"));
 
-//Routes go here
+app.get("/test", (req, res) => {
+  res.json({ message: "server is working" });
+});
+
+app.use("/auth", authRouter);
 
 app.listen(3000, () => {
   console.log("The express app is ready!");
