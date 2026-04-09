@@ -34,8 +34,8 @@ const issueSchema = new mongoose.Schema(
     status: {
       type: String,
       required: true,
-      enum: ["Proposed", "In Progress", "In Review", "Completed"],
-      default: "Proposed",
+      enum: ["Backlog", "Todo", "In Progress", "In Review", "Done"],
+      default: "Backlog"
     },
     comment: {
       type: String,
