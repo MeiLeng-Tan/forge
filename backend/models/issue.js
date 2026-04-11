@@ -1,21 +1,35 @@
 const mongoose = require("mongoose");
 
 const issueSchema = new mongoose.Schema(
-  {
-    issueName: {
+{
+    issueName: { 
       type: String,
-      required: [true, "Issue name is required."],
+      required: [true, "Task title is required."],
+      trim: true,
     },
-    priority: {
+    description: {
       type: String,
-      required: true,
-      enum: ["Low", "Medium", "High"],
-      default: "Low",
+      required: [true, "Description is required."],
     },
     type: {
       type: String,
       required: true,
       enum: ["Bug", "Feature", "Improvement"],
+    },
+    status: {
+      type: String,
+      required: true,
+      enum: ["To Do", "In Progress", "In Review", "Done"], // 统一你的前端需求
+      default: "To Do",
+    },
+    priority: {
+      type: String,
+      required: true,
+      enum: ["None", "Low", "Medium", "High", "Urgent"], // 增加了 None 和 Urgent
+      default: "None",
+    },
+    dueDate: { 
+      type: Date,
     },
     project: {
       type: mongoose.Schema.Types.ObjectId,
@@ -31,19 +45,13 @@ const issueSchema = new mongoose.Schema(
       ref: "User",
       required: true,
     },
-    status: {
-      type: String,
-      required: true,
-      enum: ["Backlog", "Todo", "In Progress", "In Review", "Done"],
-      default: "Backlog"
-    },
-    comment: {
+    comment: { 
       type: String,
     },
   },
   {
-    timestamps: true,
-  },
+    timestamps: true, 
+  }
 );
 
 const Issue = mongoose.model("Issue", issueSchema);

@@ -1,3 +1,5 @@
+import { useFormState } from "react-dom";
+
 const dotenv = require("dotenv");
 dotenv.config();
 const mongoose = require("mongoose");
@@ -53,33 +55,31 @@ const createUser = async () => {
   ];
   await User.deleteMany({});
   const user = await User.create(userData);
+  return user;
 };
 
-const createProject = async () => {
+const createProject = async (users) => {
   const projectData = [
     {
       projectName: "GA Project 1",
       projectKey: "GA-proj-1",
       description: "Browser based games",
-      owner: await User.findById("69d10bb566fd167f45da5069"), //replace the user Id
-      member: [await User.findById("69d10bb566fd167f45da506c")], //replace the user Id
+      owner: users[0]._id,
+      member: [users[1]._id],
       status: "Completed",
     },
     {
       projectName: "GA Project 3",
       projectKey: "GA-proj-3",
       description: "MERN stack project",
-      owner: await User.findById("69d10bb566fd167f45da506a"), //replace the user Id
-      member: [
-        await User.findById("69d10bb566fd167f45da506d"),
-        await User.findById("69d10bb566fd167f45da506b"),
-      ], //replace the user Id
+      owner: users[2]._id,
+      member: [users[3]._id, users[4]._id],
       status: "Proposed",
     },
   ];
 
   await Project.deleteMany({});
-  const project = Project.create(projectData);
+  const project = await Project.create(projectData);
 };
 
 const showAllProjects = async () => {
@@ -121,7 +121,7 @@ const createIssue = async () => {
     },
   ];
   Issue.deleteMany({});
-  const issue = Issue.create(issueData);
+  const issue = await Issue.create(issueData);
 };
 
 const showAllIssues = async () => {
@@ -131,9 +131,12 @@ const showAllIssues = async () => {
 
 const runQueries = async () => {
   console.log("Queries running.");
-  //await createUser();
-  //await createProject();
-  // await showAllProjects();
-  // await createIssue();
-  // await showAllIssues();
+  
+  const users = await createUser();
+  const projects = await createProject(users);
+
+  await createIssue();
+
+  await showAllProjects();
+  await showAllIssues();
 };

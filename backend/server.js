@@ -26,3 +26,11 @@ app.use("/auth", authRouter);
 app.listen(3000, () => {
   console.log("The express app is ready!");
 });
+
+
+//ZOE: router for task management 
+const issueController = require ("./controllers/issueController");
+
+app.post ("/api/tasks", issueController.createTask);
+app.get("/api/tasks/:projectID", issueController.getTasksByProject);
+app.delete("/api/tasks/:id", issueController.deleteTask)
