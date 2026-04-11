@@ -1,8 +1,9 @@
 const mongoose = require("mongoose");
 
+
 const projectSchema = new mongoose.Schema(
   {
-    projectName: {
+    projectTitle: {
       type: String,
       required: [true, "Project name is required."],
       unique: true,
@@ -11,36 +12,32 @@ const projectSchema = new mongoose.Schema(
       type: String,
       required: true,
       unique: [true, "Project key must be unique."],
-      uppercase: true
+      uppercase: true,
     },
     description: {
       type: String,
       required: true,
     },
-    owner: {
+    projectLead: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "User",
       required: true,
     },
     members: [
-      {
-        user: {
-          type: mongoose.Schema.Types.ObjectId,
-          ref: "User",
-          required: true,
-        },
-        role: {
-          type: String,
-          enum: ["Owner", "Admin", "Member"],
-          default: "Member",
-        },
-      },
+      { type: mongoose.Schema.Types.ObjectId, ref: "User", required: true },
     ],
+    targetDate: {
+      type: Date,
+      required: true,
+    },
     status: {
       type: String,
       required: true,
-      enum: ["Proposed", "In Progress", "On Hold", "Completed"],
-      default: "Proposed",
+      enum: ["To Do", "In Progress", "In Review", "Completed"],
+      default: "To Do",
+    },
+    progress: {
+      type: Number,
     },
   },
   {

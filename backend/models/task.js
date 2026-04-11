@@ -1,8 +1,21 @@
 const mongoose = require("mongoose");
 
-const issueSchema = new mongoose.Schema(
+const commentSchema = new mongoose.Schema(
   {
-    issueName: {
+    text: String,
+    author: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "User",
+    },
+  },
+  {
+    timestamps: true,
+  },
+);
+
+const taskSchema = new mongoose.Schema(
+  {
+    taskTitle: {
       type: String,
       required: [true, "Issue name is required."],
     },
@@ -17,7 +30,7 @@ const issueSchema = new mongoose.Schema(
       required: true,
       enum: ["Bug", "Feature", "Improvement"],
     },
-    project: {
+    projectKey: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "Project",
       required: true,
@@ -31,21 +44,23 @@ const issueSchema = new mongoose.Schema(
       ref: "User",
       required: true,
     },
+    dueDate: {
+      type: Date,
+      required: true,
+    },
     status: {
       type: String,
       required: true,
-      enum: ["Backlog", "Todo", "In Progress", "In Review", "Done"],
-      default: "Backlog"
+      enum: ["To Do", "In Progress", "In Review", "Done"],
+      default: "To Do",
     },
-    comment: {
-      type: String,
-    },
+    comment: [commentSchema],
   },
   {
     timestamps: true,
   },
 );
 
-const Issue = mongoose.model("Issue", issueSchema);
+const Task = mongoose.model("Task", taskSchema);
 
-module.exports = Issue;
+module.exports = Task;

@@ -1,0 +1,26 @@
+info:
+  name: CreateProject
+  type: http
+  seq: 1
+
+http:
+  method: POST
+  url: http://localhost:3000/proj/new
+  body:
+    type: json
+    data: |-
+      {
+        "projectName": "GA Project 3",
+        "projectKey": "GA-proj-3",
+        "description": "MERN stack project",
+        "owner": "69d10bb566fd167f45da506a",
+        "members": ["69d10bb566fd167f45da506d"],
+        "status": "Proposed"
+      }
+  auth: inherit
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5

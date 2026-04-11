@@ -3,7 +3,7 @@ dotenv.config();
 const mongoose = require("mongoose");
 const User = require("./models/user");
 const Project = require("./models/project");
-const Issue = require("./models/issue");
+const Task = require("./models/task");
 
 const connect = async () => {
   await mongoose.connect(process.env.MONGODB_URI);
@@ -21,33 +21,35 @@ connect();
 const createUser = async () => {
   const userData = [
     {
-      username: "user A",
+      username: "simon",
       password: "pwd",
-      email: "userA@email.com",
+      email: "simon@email.com",
+      firstName: "Simon",
+      lastName: "Lau",
       role: "Project Manager",
     },
     {
-      username: "user B",
+      username: "mervyn",
       password: "pwd",
-      email: "userB@email.com",
-      role: "Project Manager",
-    },
-    {
-      username: "user C",
-      password: "pwd",
-      email: "userC@email.com",
+      email: "mervyn@email.com",
+      firstName: "Mervyn",
+      lastName: "Chua",
       role: "Software Engineer",
     },
     {
-      username: "user D",
+      username: "zoe",
       password: "pwd",
-      email: "userD@email.com",
+      email: "zoe@email.com",
+      firstName: "Zoe",
+      lastName: "Tan",
       role: "Software Engineer",
     },
     {
-      username: "user E",
+      username: "meileng",
       password: "pwd",
-      email: "userE@email.com",
+      email: "meileng@email.com",
+      firstName: "MeiLeng",
+      lastName: "Tan",
       role: "Software Engineer",
     },
   ];
@@ -58,82 +60,99 @@ const createUser = async () => {
 const createProject = async () => {
   const projectData = [
     {
-      projectName: "GA Project 1",
+      projectTitle: "GA Project 1",
       projectKey: "GA-proj-1",
       description: "Browser based games",
-      owner: await User.findById("69d10bb566fd167f45da5069"), //replace the user Id
-      member: [await User.findById("69d10bb566fd167f45da506c")], //replace the user Id
+      projectLead: await User.findById("69d9b6374cf0f65a0c2f7731"), //replace the user Id
+      members: [await User.findById("69d9b6374cf0f65a0c2f7734")], //replace the user Id
+      targetDate: "2026/01/30",
       status: "Completed",
+      progress: "100",
     },
     {
-      projectName: "GA Project 3",
+      projectTitle: "GA Project 3",
       projectKey: "GA-proj-3",
       description: "MERN stack project",
-      owner: await User.findById("69d10bb566fd167f45da506a"), //replace the user Id
-      member: [
-        await User.findById("69d10bb566fd167f45da506d"),
-        await User.findById("69d10bb566fd167f45da506b"),
+      projectLead: await User.findById("69d9b6374cf0f65a0c2f7731"), //replace the user Id
+      members: [
+        await User.findById("69d9b6374cf0f65a0c2f7732"),
+        await User.findById("69d9b6374cf0f65a0c2f7733"),
+        await User.findById("69d9b6374cf0f65a0c2f7734"),
       ], //replace the user Id
-      status: "Proposed",
+      targetDate: "2026/04/30",
+      status: "In Progress",
+      progress: "20",
     },
   ];
 
   await Project.deleteMany({});
-  const project = Project.create(projectData);
+  const project = await Project.create(projectData);
 };
 
 const showAllProjects = async () => {
-  const projects = await Project.find({}).populate("owner member");
+  const projects = await Project.find({}).populate("projectLead members");
   console.log("All projects", projects);
 };
 
-const createIssue = async () => {
-  const issueData = [
+const createTask = async () => {
+  const taskData = [
     {
-      issueName: "React Frontend",
+      taskTitle: "React Frontend",
       priority: "Medium",
       type: "Feature",
-      project: await Project.findById("69d10f4a8b78e225d890eed0"),
-      assignee: await User.findById("69d10bb566fd167f45da506d"),
-      createdBy: await User.findById("69d10bb566fd167f45da506a"),
-      status: "Proposed",
-      comment: "Wireframe completed",
+      projectKey: await Project.findById("69d9c335393265f6f8fa4368"),
+      assignee: await User.findById("69d9b6374cf0f65a0c2f7732"),
+      createdBy: await User.findById("69d9b6374cf0f65a0c2f7731"),
+      dueDate: "2026/4/15",
+      status: "To Do",
+      comment: {
+        text: "Wireframe completed",
+        author: await User.findById("69d9b6374cf0f65a0c2f7732"),
+      },
     },
     {
-      issueName: "Backend",
+      taskTitle: "Backend",
       priority: "Medium",
       type: "Feature",
-      project: await Project.findById("69d10f4a8b78e225d890eed0"),
-      assignee: await User.findById("69d10bb566fd167f45da506b"),
-      createdBy: await User.findById("69d10bb566fd167f45da506a"),
-      status: "Proposed",
-      comment: "Setting up MongoDB",
+      projectKey: await Project.findById("69d9c335393265f6f8fa4368"),
+      assignee: await User.findById("69d9b6374cf0f65a0c2f7734"),
+      createdBy: await User.findById("69d9b6374cf0f65a0c2f7733"),
+      dueDate: "2026/4/15",
+      status: "In Progress",
+      comment: {
+        text: "Setting up MongoDB",
+        author: await User.findById("69d9b6374cf0f65a0c2f7734"),
+      },
     },
     {
-      issueName: "javascript",
+      taskTitle: "JS",
       priority: "Medium",
       type: "Bug",
-      project: await Project.findById("69d10bb566fd167f45da5069"),
-      assignee: await User.findById("69d10bb566fd167f45da506c"),
-      createdBy: await User.findById("69d10bb566fd167f45da506a"),
-      status: "Proposed",
-      comment: "Fixed bugs",
+      projectKey: await Project.findById("69d9c335393265f6f8fa4367"),
+      assignee: await User.findById("69d9b6374cf0f65a0c2f7734"),
+      createdBy: await User.findById("69d9b6374cf0f65a0c2f7734"),
+      dueDate: "2026/4/01",
+      status: "Done",
+      comment: {
+        text: "Fixed bugs",
+        author: await User.findById("69d9b6374cf0f65a0c2f7734"),
+      },
     },
   ];
-  Issue.deleteMany({});
-  const issue = Issue.create(issueData);
+  Task.deleteMany({});
+  const task = await Task.create(taskData);
 };
 
-const showAllIssues = async () => {
-  const issues = await Issue.find({}).populate("project assignee createdBy");
-  console.log("All issues", issues);
+const showAllTasks = async () => {
+  const tasks = await Task.find({}).populate("projectKey assignee createdBy");
+  console.log("All tasks", tasks);
 };
 
 const runQueries = async () => {
   console.log("Queries running.");
   //await createUser();
-  //await createProject();
+  // await createProject();
   // await showAllProjects();
-  // await createIssue();
-  // await showAllIssues();
+  // await createTask();
+  // await showAllTasks();
 };
