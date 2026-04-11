@@ -48,12 +48,13 @@ const issueSchema = new mongoose.Schema(
     comment: { 
       type: String,
     },
+    comment: [commentSchema],
   },
   {
     timestamps: true, 
   }
 );
 
-const Issue = mongoose.model("Issue", issueSchema);
+const Task = mongoose.model("Task", taskSchema);
 
-module.exports = Issue;
+module.exports = Task;
