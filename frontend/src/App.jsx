@@ -1,7 +1,9 @@
+import CreateTaskDialog from "./components/TaskModal"
+
 function App() {
   return (
     <div className="flex items-center justify-center h-screen bg-gray-100">
-      <h1>Forge is live</h1>
+      <CreateTaskDialog />
     </div>
   )
 }

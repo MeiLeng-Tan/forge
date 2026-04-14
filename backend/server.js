@@ -23,7 +23,6 @@ app.get("/test", (req, res) => {
 });
 
 app.use("/auth", authRouter);
-app.use("/proj", projectController);
 
 app.listen(3000, () => {
   console.log("The express app is ready!");
