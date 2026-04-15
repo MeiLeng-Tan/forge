@@ -6,7 +6,6 @@ const mongoose = require("mongoose");
 const logger = require("morgan");
 const cors = require("cors");
 const authRouter = require("./routes/auth-routes");
-const projectController = require("./controllers/projectsController");
 
 mongoose.connect(process.env.MONGODB_URI);
 
@@ -22,17 +21,17 @@ app.get("/test", (req, res) => {
   res.json({ message: "server is working" });
 });
 
-app.use("/auth", authRouter);
-app.use("/proj", projectController);
+app.use("/api/auth", authRouter);
+// app.use("/proj", projectController); // ML: uncomment when projectsController is ready
 
 app.listen(3000, () => {
   console.log("The express app is ready!");
 });
 
 
-//ZOE: router for task management 
-const issueController = require ("./controllers/issueController");
-
-app.post ("/api/tasks", issueController.createTask);
-app.get("/api/tasks/:projectID", issueController.getTasksByProject);
-app.delete("/api/tasks/:id", issueController.deleteTask)
+// ZOE: task routes — commented out until task.js model is fixed
+// (task.js references undefined commentSchema and uses wrong variable name taskSchema vs issueSchema)
+// const issueController = require("./controllers/issueController");
+// app.post("/api/tasks", issueController.createTask);
+// app.get("/api/tasks/:projectID", issueController.getTasksByProject);
+// app.delete("/api/tasks/:id", issueController.deleteTask);
