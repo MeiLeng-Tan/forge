@@ -1,0 +1,19 @@
+info:
+  name: DeleteProject
+  type: http
+  seq: 5
+
+http:
+  method: DELETE
+  url: http://localhost:3000/projects/:projectId
+  params:
+    - name: projectId
+      value: 69d9c335393265f6f8fa4367
+      type: path
+  auth: inherit
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5

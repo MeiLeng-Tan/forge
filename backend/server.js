@@ -6,7 +6,7 @@ const mongoose = require("mongoose");
 const logger = require("morgan");
 const cors = require("cors");
 const authRouter = require("./routes/auth-routes");
-const projectController = require("./controllers/projectsController");
+const projectRouter = require("./routes/projectRoutes");
 
 mongoose.connect(process.env.MONGODB_URI);
 
@@ -23,7 +23,7 @@ app.get("/test", (req, res) => {
 });
 
 app.use("/auth", authRouter);
-app.use("/proj", projectController);
+app.use("/projects", projectRouter);
 
 app.listen(3000, () => {
   console.log("The express app is ready!");
@@ -31,8 +31,8 @@ app.listen(3000, () => {
 
 
 //ZOE: router for task management 
-const issueController = require ("./controllers/issueController");
+// const issueController = require ("./controllers/issueController");
 
-app.post ("/api/tasks", issueController.createTask);
-app.get("/api/tasks/:projectID", issueController.getTasksByProject);
-app.delete("/api/tasks/:id", issueController.deleteTask)
+// app.post ("/api/tasks", issueController.createTask);
+// app.get("/api/tasks/:projectID", issueController.getTasksByProject);
+// app.delete("/api/tasks/:id", issueController.deleteTask)

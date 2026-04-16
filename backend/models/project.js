@@ -1,6 +1,5 @@
 const mongoose = require("mongoose");
 
-
 const projectSchema = new mongoose.Schema(
   {
     projectTitle: {
@@ -35,9 +34,6 @@ const projectSchema = new mongoose.Schema(
       required: true,
       enum: ["To Do", "In Progress", "In Review", "Completed"],
       default: "To Do",
-    },
-    progress: {
-      type: Number,
     },
   },
   {
