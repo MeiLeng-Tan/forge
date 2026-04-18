@@ -69,7 +69,6 @@ const createProject = async (users) => {
       owner: await User.findById("69d10bb566fd167f45da5069"), //replace the user Id
       member: [await User.findById("69d10bb566fd167f45da506c")], //replace the user Id
       status: "Completed",
-      progress: "100",
     },
     {
       projectTitle: "GA Project 3",
@@ -150,7 +149,7 @@ const showAllTasks = async () => {
 const runQueries = async () => {
   console.log("Queries running.");
   //await createUser();
-  //await createProject();
+  await createProject();
   // await showAllProjects();
   // await createIssue();
   // await showAllIssues();

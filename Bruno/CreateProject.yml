@@ -5,17 +5,18 @@ info:
 
 http:
   method: POST
-  url: http://localhost:3000/proj/new
+  url: http://localhost:3000/projects/new
   body:
     type: json
     data: |-
       {
-        "projectName": "GA Project 3",
-        "projectKey": "GA-proj-3",
+        "projectTitle": "GA Project 3",
+        "projectKey": "Forge",
         "description": "MERN stack project",
-        "owner": "69d10bb566fd167f45da506a",
-        "members": ["69d10bb566fd167f45da506d"],
-        "status": "Proposed"
+        "projectLead": "69d9b6374cf0f65a0c2f7731",
+        "members": ["69d9b6374cf0f65a0c2f7732", "69d9b6374cf0f65a0c2f7733", "69d9b6374cf0f65a0c2f7734"],
+        "targetDate": "2026/04/01",
+        "status": "To Do"
       }
   auth: inherit
 

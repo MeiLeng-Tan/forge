@@ -1,25 +1,112 @@
-// const User = require("../models/user");
-// const Project = require("../models/project");
-// const express = require("express");
+const express = require("express");
 // const router = express.Router();
+const Project = require("../models/project");
+const User = require("../models/user");
 
-// const createProject = async (req, res) => {
-//   const { projectName, projectKey, description, owner, members, status } =
-//     req.body;
-//   const projOwner = await User.findById(owner);
-//   const projMembers = await User.findById(members);
+const createProject = async (req, res) => {
+  const {
+    projectTitle,
+    projectKey,
+    description,
+    projectLead,
+    members,
+    targetDate,
+    status,
+  } = req.body;
+  try {
+    if (
+      !projectTitle ||
+      !projectKey ||
+      !description ||
+      !projectLead ||
+      !targetDate ||
+      !status
+    ) {
+      return res.status(400).json({ message: "Missing required project info" });
+    }
 
-//   const project = await Project.create({
-//     projectName,
-//     projectKey,
-//     description,
-//     projOwner,
-//     projMembers,
-//     status,
-//   });
-//   res.status(201).json({ project });
-// };
+    const project = await Project.create({
+      projectTitle,
+      projectKey,
+      description,
+      projectLead,
+      members: members || [],
+      targetDate,
+      status,
+    });
 
-// router.post("/new", createProject);
+    res.status(201).json({ message: "Project created successfully", project });
+  } catch (err) {
+    if (err.code === 11000) {
+      return res
+        .status(400)
+        .json({ message: "Project Title or Key already exists." });
+    }
+    res.status(500).json({ err });
+  }
+};
 
-// module.exports = router;
+const getProjects = async (req, res) => {
+  try {
+    const projects = await Project.find({})
+      .populate("projectLead", "firstName")
+      .populate("members", "username");
+    res.status(200).json({ projects });
+  } catch (err) {
+    res.status(500).json({ err: err.message });
+  }
+};
+
+const getProjectById = async (req, res) => {
+  try {
+    const projectId = req.params.projectId;
+    const project = await Project.findById(projectId)
+      .populate("projectLead", "username")
+      .populate("members", "username");
+
+    if (!project) {
+      return res.st(404).json({ message: "Project not found." });
+    }
+    res.status(200).json({ project });
+  } catch (err) {
+    res.status(500).json({ message: err.message });
+  }
+};
+
+const editProject = async (req, res) => {
+  try {
+    const projectId = req.params.projectId;
+    const updates = req.body;
+    const updatedProject = await Project.findByIdAndUpdate(projectId, updates, {
+      new: true,
+      runValidators: true,
+    });
+    if (!updatedProject) {
+      return res.status(404).json({ message: "Project not found." });
+    }
+    res.json({ message: "Proejct updated.", project: updatedProject });
+  } catch (err) {
+    res.status(500).json({ message: err.message });
+  }
+};
+
+const deleteProject = async (req, res) => {
+  try {
+    const projectId = req.params.projectId;
+    const deletedProject = await Project.findByIdAndDelete(projectId);
+    if (!deletedProject) {
+      return res.status(404).json({ message: "Project not found." });
+    }
+    res.status(200).send({ message: "Project deleted!" });
+  } catch (err) {
+    res.status(500).json({ message: err.message });
+  }
+};
+
+module.exports = {
+  createProject,
+  getProjects,
+  getProjectById,
+  editProject,
+  deleteProject,
+};
