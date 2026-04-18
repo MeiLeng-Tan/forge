@@ -31,6 +31,8 @@ const theme = createTheme({
   },
 })
 
+import CreateTaskDialog from "./components/TaskModal"
+
 function App() {
   return (
     <ThemeProvider theme={theme}>

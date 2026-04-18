@@ -1,8 +1,8 @@
 const mongoose = require("mongoose");
 
-const issueSchema = new mongoose.Schema(
+const taskSchema = new mongoose.Schema(
 {
-    issueName: { 
+    title: { 
       type: String,
       required: [true, "Task title is required."],
       trim: true,
@@ -43,12 +43,17 @@ const issueSchema = new mongoose.Schema(
     createdBy: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "User",
-      required: true,
+      required: false,
     },
     comment: { 
       type: String,
     },
-    comment: [commentSchema],
+    comment: [{
+      text: String,
+      createdAt: {
+      type: Date,
+      default: Date.now,
+    }}],
   },
   {
     timestamps: true, 
