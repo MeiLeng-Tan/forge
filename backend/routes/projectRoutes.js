@@ -8,12 +8,20 @@ const {
   getProjectById,
   editProject,
   deleteProject,
+  queryUser,
+  queryProject,
 } = require("../controllers/projectsController");
 
+router.get("/query", verifyToken, queryUser);
 router.get("/", verifyToken, getProjects);
 router.post("/new", verifyToken, createProject);
 router.get("/:projectId", verifyToken, getProjectById);
-router.patch("/:projectId/edit", verifyToken, requireRole("admin"), editProject);
-router.delete("/:projectId", verifyToken, requireRole("admin"), deleteProject);
+// router.patch(
+//   "/:projectId/edit",
+//   verifyToken,
+//   requireRole("admin"),
+//   editProject,
+// );
+// router.delete("/:projectId", verifyToken, requireRole("admin"), deleteProject);
 
 module.exports = router;

@@ -1,11 +1,15 @@
 info:
-  name: GetAllProjects
+  name: QueryUser
   type: http
-  seq: 2
+  seq: 6
 
 http:
   method: GET
-  url: http://localhost:3000/projects
+  url: http://localhost:3000/api/projects/query?search=ad
+  params:
+    - name: search
+      value: ad
+      type: query
   auth:
     type: bearer
     token: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2OWU0NWZjYTM3ZmVjMTgxYjU3MzM4ZDQiLCJpYXQiOjE3NzY2MDM3NDAsImV4cCI6MTc3NzIwODU0MH0.IlkyxOdfuiG2IZEccOQuF8KXQRGVxpueIxN1RTW4mlU

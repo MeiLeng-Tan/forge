@@ -1,7 +1,7 @@
-import { useState } from 'react'
-import { useNavigate, Link as RouterLink } from 'react-router-dom'
-import axios from 'axios'
-import { useAuth } from '../context/AuthContext'
+import { useState } from "react";
+import { useNavigate, Link as RouterLink } from "react-router-dom";
+import axios from "axios";
+import { useAuth } from "../context/AuthContext";
 import {
   Box,
   Paper,
@@ -10,54 +10,59 @@ import {
   Button,
   Alert,
   Link,
-} from '@mui/material'
+} from "@mui/material";
 
 export default function SignIn() {
-  const navigate = useNavigate()
-  const { login } = useAuth()
+  const navigate = useNavigate();
+  const { login } = useAuth();
 
-  const [formData, setFormData] = useState({ email: '', password: '' })
-  const [error, setError] = useState('')
-  const [loading, setLoading] = useState(false)
+  const [formData, setFormData] = useState({ email: "", password: "" });
+  const [error, setError] = useState("");
+  const [loading, setLoading] = useState(false);
 
   const handleChange = (e) => {
-    setFormData({ ...formData, [e.target.name]: e.target.value })
-  }
+    setFormData({ ...formData, [e.target.name]: e.target.value });
+  };
 
   const handleSubmit = async (e) => {
-    e.preventDefault()
-    setError('')
-    setLoading(true)
+    e.preventDefault();
+    setError("");
+    setLoading(true);
 
     try {
-      const { data } = await axios.post('http://localhost:3000/api/auth/signin', formData)
-      login(data.token, data.user)
-      navigate('/dashboard')
+      const { data } = await axios.post(
+        `${import.meta.env.VITE_BACK_END_SERVER_URL}/api/auth/signin`,
+        formData,
+      );
+      login(data.token, data.user);
+      // navigate('/dashboard')
+      //Navigate to workspace after signed in
+      navigate("/workspace");
     } catch (err) {
-      setError(err.response?.data?.message || 'Something went wrong.')
+      setError(err.response?.data?.message || "Something went wrong.");
     } finally {
-      setLoading(false)
+      setLoading(false);
     }
-  }
+  };
 
   return (
     <Box
       sx={{
-        minHeight: '100vh',
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'center',
-        bgcolor: 'background.default',
+        minHeight: "100vh",
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "center",
+        bgcolor: "background.default",
       }}
     >
       <Paper
         elevation={0}
         sx={{
-          width: '100%',
+          width: "100%",
           maxWidth: 448,
           p: 4,
-          border: '1px solid',
-          borderColor: 'grey.200',
+          border: "1px solid",
+          borderColor: "grey.200",
           borderRadius: 3,
         }}
       >
@@ -74,7 +79,11 @@ export default function SignIn() {
           </Alert>
         )}
 
-        <Box component="form" onSubmit={handleSubmit} sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
+        <Box
+          component="form"
+          onSubmit={handleSubmit}
+          sx={{ display: "flex", flexDirection: "column", gap: 2 }}
+        >
           <TextField
             label="Email"
             type="email"
@@ -109,17 +118,28 @@ export default function SignIn() {
             disabled={loading}
             sx={{ mt: 0.5, py: 1 }}
           >
-            {loading ? 'Signing in...' : 'Sign in'}
+            {loading ? "Signing in..." : "Sign in"}
           </Button>
         </Box>
 
-        <Typography variant="body2" color="text.secondary" textAlign="center" mt={2.5}>
-          Don&apos;t have an account?{' '}
-          <Link component={RouterLink} to="/signup" color="grey.900" fontWeight={500} underline="hover">
+        <Typography
+          variant="body2"
+          color="text.secondary"
+          textAlign="center"
+          mt={2.5}
+        >
+          Don&apos;t have an account?{" "}
+          <Link
+            component={RouterLink}
+            to="/signup"
+            color="grey.900"
+            fontWeight={500}
+            underline="hover"
+          >
             Sign up
           </Link>
         </Typography>
       </Paper>
     </Box>
-  )
+  );
 }

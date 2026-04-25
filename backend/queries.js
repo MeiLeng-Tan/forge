@@ -1,4 +1,4 @@
-import { useFormState } from "react-dom";
+//Run to create dummy data in MongoDB
 
 const dotenv = require("dotenv");
 dotenv.config();
@@ -6,6 +6,8 @@ const mongoose = require("mongoose");
 const User = require("./models/user");
 const Project = require("./models/project");
 const Task = require("./models/task");
+const { faker } = require("@faker-js/faker");
+const bcrypt = require("bcrypt");
 
 const connect = async () => {
   await mongoose.connect(process.env.MONGODB_URI);
@@ -19,138 +21,85 @@ const connect = async () => {
 
 connect();
 
-/*----- Query Functions -----*/
-const createUser = async () => {
-  const userData = [
-    {
-      username: "simon",
-      password: "pwd",
-      email: "simon@email.com",
-      firstName: "Simon",
-      lastName: "Lau",
-      role: "Project Manager",
-    },
-    {
-      username: "mervyn",
-      password: "pwd",
-      email: "mervyn@email.com",
-      firstName: "Mervyn",
-      lastName: "Chua",
-      role: "Software Engineer",
-    },
-    {
-      username: "zoe",
-      password: "pwd",
-      email: "zoe@email.com",
-      firstName: "Zoe",
-      lastName: "Tan",
-      role: "Software Engineer",
-    },
-    {
-      username: "meileng",
-      password: "pwd",
-      email: "meileng@email.com",
-      firstName: "MeiLeng",
-      lastName: "Tan",
-      role: "Software Engineer",
-    },
-  ];
-  await User.deleteMany({});
-  const user = await User.create(userData);
-  return user;
-};
-
-const createProject = async (users) => {
-  const projectData = [
-    {
-      projectTitle: "GA Project 1",
-      projectKey: "GA-proj-1",
-      description: "Browser based games",
-      owner: await User.findById("69d10bb566fd167f45da5069"), //replace the user Id
-      member: [await User.findById("69d10bb566fd167f45da506c")], //replace the user Id
-      status: "Completed",
-    },
-    {
-      projectTitle: "GA Project 3",
-      projectKey: "GA-proj-3",
-      description: "MERN stack project",
-      owner: await User.findById("69d10bb566fd167f45da506a"), //replace the user Id
-      member: [
-        await User.findById("69d10bb566fd167f45da506d"),
-        await User.findById("69d10bb566fd167f45da506b"),
-      ], //replace the user Id
-      status: "Proposed",
-    },
-  ];
-
-  await Project.deleteMany({});
-  const project = await Project.create(projectData);
-};
-
-const showAllProjects = async () => {
-  const projects = await Project.find({}).populate("projectLead members");
-  console.log("All projects", projects);
-};
-
-const createTask = async () => {
-  const taskData = [
-    {
-      taskTitle: "React Frontend",
-      priority: "Medium",
-      type: "Feature",
-      projectKey: await Project.findById("69d9c335393265f6f8fa4368"),
-      assignee: await User.findById("69d9b6374cf0f65a0c2f7732"),
-      createdBy: await User.findById("69d9b6374cf0f65a0c2f7731"),
-      dueDate: "2026/4/15",
-      status: "To Do",
-      comment: {
-        text: "Wireframe completed",
-        author: await User.findById("69d9b6374cf0f65a0c2f7732"),
-      },
-    },
-    {
-      taskTitle: "Backend",
-      priority: "Medium",
-      type: "Feature",
-      projectKey: await Project.findById("69d9c335393265f6f8fa4368"),
-      assignee: await User.findById("69d9b6374cf0f65a0c2f7734"),
-      createdBy: await User.findById("69d9b6374cf0f65a0c2f7733"),
-      dueDate: "2026/4/15",
-      status: "In Progress",
-      comment: {
-        text: "Setting up MongoDB",
-        author: await User.findById("69d9b6374cf0f65a0c2f7734"),
-      },
-    },
-    {
-      taskTitle: "JS",
-      priority: "Medium",
-      type: "Bug",
-      projectKey: await Project.findById("69d9c335393265f6f8fa4367"),
-      assignee: await User.findById("69d9b6374cf0f65a0c2f7734"),
-      createdBy: await User.findById("69d9b6374cf0f65a0c2f7734"),
-      dueDate: "2026/4/01",
-      status: "Done",
-      comment: {
-        text: "Fixed bugs",
-        author: await User.findById("69d9b6374cf0f65a0c2f7734"),
-      },
-    },
-  ];
-  Issue.deleteMany({});
-  const issue = Issue.create(issueData);
-};
-
-const showAllTasks = async () => {
-  const tasks = await Task.find({}).populate("projectKey assignee createdBy");
-  console.log("All tasks", tasks);
-};
-
 const runQueries = async () => {
-  console.log("Queries running.");
-  //await createUser();
-  await createProject();
-  // await showAllProjects();
-  // await createIssue();
-  // await showAllIssues();
+  //Clear Database
+  await User.deleteMany({});
+  await Project.deleteMany({});
+  await Task.deleteMany({});
+
+  //Create User
+  const roles = ["user", "admin"];
+  const hashedPassword = await bcrypt.hash("password123", 12);
+  const users = await User.insertMany(
+    Array.from({ length: 10 }).map(() => ({
+      username: faker.internet.username(),
+      firstName: faker.person.firstName(),
+      lastName: faker.person.lastName(),
+      email: faker.internet.email(),
+      password: hashedPassword,
+      role: faker.helpers.arrayElement(roles),
+    })),
+  );
+  //Create Projects
+  const projectStatus = ["To Do", "In Progress", "In Review", "Completed"];
+  const projects = await Project.insertMany(
+    Array.from({ length: 6 }).map(() => {
+      // 1. Pick a lead first
+      const lead = faker.helpers.arrayElement(users);
+
+      // 2. Filter out the lead from the pool of potential members
+      const potentialMembers = users.filter((user) => user._id !== lead._id);
+
+      return {
+        projectTitle: faker.company.catchPhrase(),
+        projectKey: faker.string.alpha(4).toUpperCase(), // Added .toUpperCase() for standard key formatting
+        description: faker.lorem.sentence(),
+        projectLead: lead._id,
+        // 3. Pick members only from the filtered list
+        members: faker.helpers
+          .arrayElements(potentialMembers, { min: 1, max: 5 })
+          .map((user) => user._id),
+        targetDate: faker.date.future(),
+        status: faker.helpers.arrayElement(projectStatus),
+      };
+    }),
+  );
+  //Create Tasks
+  const tasks = [];
+
+  for (const project of projects) {
+    const potentialAssignees = [project.projectLead, ...project.members];
+
+    const taskCount = faker.number.int({ min: 2, max: 5 });
+
+    for (let i = 0; i < taskCount; i++) {
+      tasks.push({
+        title: faker.hacker.ingverb() + " " + faker.hacker.noun(),
+        description: faker.lorem.paragraph(),
+        type: faker.helpers.arrayElement(["Bug", "Feature", "Improvement"]),
+        project: project._id,
+        assignee: faker.helpers.arrayElement(potentialAssignees),
+        createdBy: faker.helpers.arrayElement(potentialAssignees),
+        status: faker.helpers.arrayElement([
+          "To Do",
+          "In Progress",
+          "In Review",
+          "Done",
+        ]),
+        priority: faker.helpers.arrayElement([
+          "None",
+          "Low",
+          "Medium",
+          "High",
+          "Urgent",
+        ]),
+        dueDate: faker.date.between({
+          from: new Date(),
+          to: project.targetDate,
+        }),
+      });
+    }
+  }
+
+  await Task.insertMany(tasks);
 };
