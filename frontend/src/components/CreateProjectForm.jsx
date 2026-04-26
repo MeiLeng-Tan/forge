@@ -16,10 +16,15 @@ import { DatePicker } from "@mui/x-date-pickers/DatePicker";
 import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import { debounce } from "lodash";
-import { createProject, queryUserByName } from "../services/workspaceService";
+import {
+  createProject,
+  queryUserByName,
+} from "../services/projectSpaceService";
 import { useAuth } from "../context/AuthContext";
+import { useNavigate } from "react-router-dom";
 
-const ProjectForm = () => {
+const CreateProjectForm = ({ onClose }) => {
+  const navigate = useNavigate();
   const { user } = useAuth();
   console.log("logged in user", user);
   const [formData, setFormData] = useState({
@@ -38,7 +43,7 @@ const ProjectForm = () => {
   const debouncedFetch = useMemo(
     () =>
       debounce(async (query, callback) => {
-        if (query.length < 2) return;
+        // if (query.length < 2) return;
         setLoading(true);
         try {
           const response = await queryUserByName(query);
@@ -74,6 +79,7 @@ const ProjectForm = () => {
     try {
       const response = await createProject(projectData);
       console.log("Project created successfully", response.data);
+      onClose();
     } catch (err) {
       console.error(
         "Failed to create project",
@@ -169,6 +175,11 @@ const ProjectForm = () => {
               `${option.firstName} ${option.lastName}`
             }
             loading={loading}
+            onFocus={() => {
+              if (membersList.length === 0) {
+                handleSearch(null, "");
+              }
+            }}
             onInputChange={(event, value) => handleSearch(event, value)}
             onChange={(event, newValue) => {
               // newValue is the updated array of selected members
@@ -225,19 +236,24 @@ const ProjectForm = () => {
             <MenuItem value={"In Review"}>In Review</MenuItem>
             <MenuItem value={"Completed"}>Completed</MenuItem>
           </TextField>
-          <Button
-            type="submit"
-            variant="contained"
-            color="primary"
-            fullWidth
-            sx={{ mt: 0.5, py: 1 }}
-          >
-            Create
-          </Button>
+          <Box>
+            <Button variant="outlined" fullWidth onClick={onClose}>
+              Back
+            </Button>
+            <Button
+              type="submit"
+              variant="contained"
+              color="primary"
+              fullWidth
+              sx={{ mt: 0.5, py: 1 }}
+            >
+              Create
+            </Button>
+          </Box>
         </Box>
       </Paper>
     </Box>
   );
 };
 
-export default ProjectForm;
+export default CreateProjectForm;

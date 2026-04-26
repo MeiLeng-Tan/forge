@@ -4,8 +4,7 @@ import { AuthProvider } from "./context/AuthContext";
 import SignUp from "./pages/SignUp";
 import SignIn from "./pages/SignIn";
 import SignOut from "./pages/SignOut";
-import Workspace from "./components/Workspace";
-import ProjectForm from "./components/ProjectForm";
+import ProjectSpace from "./components/ProjectSpace";
 import Dashboard from "./components/Dashboard";
 
 const theme = createTheme({
@@ -45,10 +44,11 @@ function App() {
           <Route path="/" element={<Navigate to="/signin" replace />} />
           <Route path="/signup" element={<SignUp />} />
           <Route path="/signin" element={<SignIn />} />
+          <Route path="/signout" element={<SignOut />} />
           <Route path="/" element={<Dashboard />}>
-            <Route path="/workspace" element={<Workspace />} />
-            <Route path="/project/new" element={<ProjectForm />} />
-            <Route path="/signout" element={<SignOut />} />
+            <Route path="/projects" element={<ProjectSpace />} />
+            {/* <Route path="/tasks" element={<Task />} /> */}
+            {/* <Route path="/settings" element={<Settings />} /> */}
           </Route>
         </Routes>
       </AuthProvider>

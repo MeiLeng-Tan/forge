@@ -1,0 +1,22 @@
+info:
+  name: Sign In
+  type: http
+  seq: 8
+
+http:
+  method: POST
+  url: https://forge-k182.onrender.com/api/auth/signin
+  body:
+    type: json
+    data: |-
+      {
+        "email": "Elbert6@gmail.com",
+        "password": "password123"
+      }
+  auth: inherit
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5

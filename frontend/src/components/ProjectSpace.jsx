@@ -6,35 +6,39 @@ import {
   CardActionArea,
   CardActions,
   Button,
-  Avatar,
+  Dialog,
+  DialogContent,
+  DialogTitle,
 } from "@mui/material";
 import { useEffect, useState } from "react";
-import * as workspaceService from "../services/workspaceService";
+import * as workspaceService from "../services/projectSpaceService";
 import { useNavigate } from "react-router";
 import UserAvatar from "./UserAvatar";
 import AvatarGroup from "@mui/material/AvatarGroup";
 import { useAuth } from "../context/AuthContext";
+import CreateProjectForm from "./CreateProjectForm";
 
-const Workspace = () => {
+const ProjectSpace = () => {
   const { user } = useAuth();
   console.log(user);
   const navigate = useNavigate();
   const [projects, setProjects] = useState([]);
   const [selectedProject, setSelectedProject] = useState(null);
+  const [openProjectForm, setOpenProjectForm] = useState(false);
+
+  const fetchWorkspace = async () => {
+    // const workspaceData = await workspaceService.getProjects();
+    const workspaceData = await workspaceService.getProjects(user);
+    console.log(workspaceData.data.projects);
+    setProjects(workspaceData.data.projects || []);
+  };
 
   useEffect(() => {
-    const fetchWorkspace = async () => {
-      // const workspaceData = await workspaceService.getProjects();
-      const workspaceData = await workspaceService.getProjects(user);
-      console.log(workspaceData.data.projects);
-      setProjects(workspaceData.data.projects || []);
-    };
     fetchWorkspace();
   }, []);
 
   return (
     <>
-      <main>My Workspace</main>
       <Box
         sx={{
           width: "100%",
@@ -47,7 +51,7 @@ const Workspace = () => {
         <Card>
           <CardActionArea
             sx={{ height: "100%", border: "1px dashed grey" }}
-            onClick={() => navigate("/project/new")}
+            onClick={() => setOpenProjectForm(true)}
           >
             <CardContent
               sx={{
@@ -62,6 +66,21 @@ const Workspace = () => {
               </Typography>
             </CardContent>
           </CardActionArea>
+          <Dialog
+            open={openProjectForm}
+            onClose={() => setOpenProjectForm(false)}
+            fullWidth
+            maxWidth="sm"
+          >
+            <DialogContent>
+              <CreateProjectForm
+                onClose={() => {
+                  setOpenProjectForm(false);
+                  fetchWorkspace();
+                }}
+              />
+            </DialogContent>
+          </Dialog>
         </Card>
         {projects?.map((project, index) => (
           <Card key={project._id}>
@@ -103,4 +122,4 @@ const Workspace = () => {
   );
 };
 
-export default Workspace;
+export default ProjectSpace;

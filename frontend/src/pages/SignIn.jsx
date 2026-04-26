@@ -37,7 +37,7 @@ export default function SignIn() {
       login(data.token, data.user);
       // navigate('/dashboard')
       //Navigate to workspace after signed in
-      navigate("/workspace");
+      navigate("/projects");
     } catch (err) {
       setError(err.response?.data?.message || "Something went wrong.");
     } finally {

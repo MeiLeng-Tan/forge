@@ -46,7 +46,7 @@ const createProject = async (req, res) => {
   }
 };
 
-const getProjects = async (req, res) => {
+const getAllProjects = async (req, res) => {
   try {
     const projects = await Project.find({})
       .populate("projectLead", "firstName lastName")
@@ -57,11 +57,13 @@ const getProjects = async (req, res) => {
   }
 };
 
-const getUserProjects = async (req, res) => {
+const getProjects = async (req, res) => {
   try {
-    const { search } = queryParams;
+    const userId = req.user.userId;
 
-    const projects = await Project.find({})
+    const projects = await Project.find({
+      $or: [{ projectLead: userId }, { members: userId }],
+    })
       .populate("projectLead", "firstName lastName")
       .populate("members", "firstName lastName");
     res.status(200).json({ projects });
@@ -153,10 +155,11 @@ const deleteProject = async (req, res) => {
 
 module.exports = {
   createProject,
-  getProjects,
+  getAllProjects,
   getProjectById,
   editProject,
   deleteProject,
   queryProject,
   queryUser,
+  getProjects,
 };

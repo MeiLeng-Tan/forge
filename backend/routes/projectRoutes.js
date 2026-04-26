@@ -10,6 +10,7 @@ const {
   deleteProject,
   queryUser,
   queryProject,
+  getUserProjects,
 } = require("../controllers/projectsController");
 
 router.get("/query", verifyToken, queryUser);
