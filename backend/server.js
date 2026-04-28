@@ -7,6 +7,7 @@ const logger = require("morgan");
 const cors = require("cors");
 const authRouter = require("./routes/auth-routes");
 const projectRouter = require("./routes/projectRoutes");
+const taskRoutes = require("./routes/taskRoutes");
 
 mongoose.connect(process.env.MONGODB_URI);
 
@@ -17,6 +18,7 @@ mongoose.connection.on("connected", () => {
 app.use(cors());
 app.use(express.json());
 app.use(logger("dev"));
+app.use("/api", taskRoutes);
 
 app.get("/test", (req, res) => {
   res.json({ message: "server is working" });

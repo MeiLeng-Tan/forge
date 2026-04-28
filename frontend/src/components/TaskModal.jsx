@@ -1,4 +1,3 @@
-
 //from mateiral UI 
 import * as React from 'react';
 import Button from '@mui/material/Button';
@@ -20,12 +19,13 @@ const BootstrapDialog = styled(Dialog)(({ theme }) => ({
   },
 }));
 
-export default function CreateTaskDialog () {
+export default function CreateTaskDialog ({ projectId, onTaskCreated }) {
   const [open, setOpen] = React.useState(false);
   
   const [form,setForm] = React.useState({
     title: "",
     description: "",
+    // asignee:"",
     type:"Feature",
     status:"Todo",
     priority:"None"
@@ -47,7 +47,7 @@ export default function CreateTaskDialog () {
         },
         body: JSON.stringify({
         ...form,
-        project: "69d9aebcf689d13dd0d4882f",
+        project: projectId,
         createdBy: "69d9aebcf689d13dd0d4882a"
         })
       });
@@ -56,6 +56,8 @@ export default function CreateTaskDialog () {
       console.log("Created:", data)
 
       setOpen(false);
+
+      onTaskCreated && onTaskCreated();
 
     } catch (err) {
       console.error(err);

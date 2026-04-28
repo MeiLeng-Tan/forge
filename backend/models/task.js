@@ -45,9 +45,6 @@ const taskSchema = new mongoose.Schema(
       ref: "User",
       required: false,
     },
-    comment: { 
-      type: String,
-    },
     comment: [{
       text: String,
       createdAt: {

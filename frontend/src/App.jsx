@@ -4,6 +4,7 @@ import { AuthProvider } from './context/AuthContext'
 import SignUp from './pages/SignUp'
 import SignIn from './pages/SignIn'
 import Dashboard from './pages/Dashboard'
+import TaskPage from "./pages/TaskPage";
 
 const theme = createTheme({
   palette: {
@@ -43,10 +44,14 @@ function App() {
           <Route path="/signup" element={<SignUp />} />
           <Route path="/signin" element={<SignIn />} />
           <Route path="/dashboard" element={<Dashboard />} />
+          <Route path="/project/:id" element={<TaskPage />} />
+          {/* <Route path="/" /> */}
         </Routes>
       </AuthProvider>
     </ThemeProvider>
   )
 }
+
+
 
 export default App
