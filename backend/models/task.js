@@ -1,8 +1,8 @@
 const mongoose = require("mongoose");
 
 const taskSchema = new mongoose.Schema(
-{
-    title: { 
+  {
+    title: {
       type: String,
       required: [true, "Task title is required."],
       trim: true,
@@ -28,7 +28,7 @@ const taskSchema = new mongoose.Schema(
       enum: ["None", "Low", "Medium", "High", "Urgent"], // 增加了 None 和 Urgent
       default: "None",
     },
-    dueDate: { 
+    dueDate: {
       type: Date,
     },
     project: {
@@ -53,8 +53,8 @@ const taskSchema = new mongoose.Schema(
     }}],
   },
   {
-    timestamps: true, 
-  }
+    timestamps: true,
+  },
 );
 
 const Task = mongoose.model("Task", taskSchema);

@@ -10,11 +10,11 @@ http:
     type: json
     data: |-
       {
-        "projectTitle": "GA Project 3",
-        "projectKey": "Forge",
+        "projectTitle": "ABC ",
+        "projectKey": "ABC",
         "description": "MERN stack project",
         "projectLead": "69d9b6374cf0f65a0c2f7731",
-        "members": ["69d9b6374cf0f65a0c2f7732", "69d9b6374cf0f65a0c2f7733", "69d9b6374cf0f65a0c2f7734"],
+        "members": ["69e317561f03b44f5322e8e0", "69d9b6374cf0f65a0c2f7733", "69d9b6374cf0f65a0c2f7734"],
         "targetDate": "2026/04/01",
         "status": "To Do"
       }

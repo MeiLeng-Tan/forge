@@ -1,21 +1,23 @@
-import { Routes, Route, Navigate } from 'react-router-dom'
-import { createTheme, ThemeProvider, CssBaseline } from '@mui/material'
-import { AuthProvider } from './context/AuthContext'
-import SignUp from './pages/SignUp'
-import SignIn from './pages/SignIn'
-import Dashboard from './pages/Dashboard'
+import { Routes, Route, Navigate } from "react-router-dom";
+import { createTheme, ThemeProvider, CssBaseline } from "@mui/material";
+import { AuthProvider } from "./context/AuthContext";
+import SignUp from "./pages/SignUp";
+import SignIn from "./pages/SignIn";
+import SignOut from "./pages/SignOut";
+import ProjectSpace from "./components/ProjectSpace";
+import Dashboard from "./components/Dashboard";
 import TaskPage from "./pages/TaskPage";
 
 const theme = createTheme({
   palette: {
     primary: {
-      main: '#111827',
-      light: '#374151',
-      dark: '#030712',
-      contrastText: '#ffffff',
+      main: "#111827",
+      light: "#374151",
+      dark: "#030712",
+      contrastText: "#ffffff",
     },
     background: {
-      default: '#f9fafb',
+      default: "#f9fafb",
     },
   },
   shape: {
@@ -23,16 +25,16 @@ const theme = createTheme({
   },
   typography: {
     fontFamily: [
-      'Inter',
-      '-apple-system',
-      'BlinkMacSystemFont',
+      "Inter",
+      "-apple-system",
+      "BlinkMacSystemFont",
       '"Segoe UI"',
-      'sans-serif',
-    ].join(','),
+      "sans-serif",
+    ].join(","),
   },
-})
+});
 
-import CreateTaskDialog from "./components/TaskModal"
+import CreateTaskDialog from "./components/TaskModal";
 
 function App() {
   return (
@@ -43,15 +45,22 @@ function App() {
           <Route path="/" element={<Navigate to="/signin" replace />} />
           <Route path="/signup" element={<SignUp />} />
           <Route path="/signin" element={<SignIn />} />
-          <Route path="/dashboard" element={<Dashboard />} />
+          <Route path="/signout" element={<SignOut />} />
+          <Route path="/" element={<Dashboard />}>
+            <Route path="/projects" element={<ProjectSpace />} />
+            {/* <Route path="/tasks" element={<Task />} /> */}
+            {/* <Route path="/settings" element={<Settings />} /> */}
+          </Route>
           <Route path="/project/:id" element={<TaskPage />} />
           {/* <Route path="/" /> */}
         </Routes>
       </AuthProvider>
     </ThemeProvider>
-  )
+  );
 }
 
 
 
-export default App
+
+
+export default App;

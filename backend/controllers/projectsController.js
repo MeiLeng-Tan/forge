@@ -46,11 +46,26 @@ const createProject = async (req, res) => {
   }
 };
 
-const getProjects = async (req, res) => {
+const getAllProjects = async (req, res) => {
   try {
     const projects = await Project.find({})
-      .populate("projectLead", "firstName")
-      .populate("members", "username");
+      .populate("projectLead", "firstName lastName")
+      .populate("members", "firstName lastName");
+    res.status(200).json({ projects });
+  } catch (err) {
+    res.status(500).json({ err: err.message });
+  }
+};
+
+const getProjects = async (req, res) => {
+  try {
+    const userId = req.user.userId;
+
+    const projects = await Project.find({
+      $or: [{ projectLead: userId }, { members: userId }],
+    })
+      .populate("projectLead", "firstName lastName")
+      .populate("members", "firstName lastName");
     res.status(200).json({ projects });
   } catch (err) {
     res.status(500).json({ err: err.message });
@@ -68,6 +83,41 @@ const getProjectById = async (req, res) => {
       return res.st(404).json({ message: "Project not found." });
     }
     res.status(200).json({ project });
+  } catch (err) {
+    res.status(500).json({ message: err.message });
+  }
+};
+
+//query fitler
+const queryFilter = (queryParams) => {
+  const { search } = queryParams;
+  if (!search) return;
+
+  return {
+    $or: [
+      { firstName: { $regex: search, $options: "i" } },
+      { lastName: { $regex: search, $options: "i" } },
+    ],
+  };
+};
+
+const queryProject = async (req, res) => {
+  try {
+    const query = queryFilter(req.query);
+    const project = await Project.find({ projectLead: query })
+      .populate("projectLead", "firstName lastName")
+      .populate("members", "firstName lastName");
+    res.status(200).json({ project });
+  } catch (err) {
+    res.status(500).json({ message: err.message });
+  }
+};
+
+const queryUser = async (req, res) => {
+  try {
+    const query = queryFilter(req.query);
+    const users = await User.find(query).limit(10);
+    res.status(200).json(users);
   } catch (err) {
     res.status(500).json({ message: err.message });
   }
@@ -105,8 +155,11 @@ const deleteProject = async (req, res) => {
 
 module.exports = {
   createProject,
-  getProjects,
+  getAllProjects,
   getProjectById,
   editProject,
   deleteProject,
+  queryProject,
+  queryUser,
+  getProjects,
 };
