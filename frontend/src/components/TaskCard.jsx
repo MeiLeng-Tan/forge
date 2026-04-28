@@ -1,27 +1,91 @@
 import { useDraggable } from "@dnd-kit/core";
 
-export default function TaskCard({ task }) {
-  const { attributes, listeners, setNodeRef, transform } = useDraggable ({
-    id: task._id
-  })
-  
+import UserAvatar from "./UserAvatar";
+
+export default function TaskCard({
+  task,
+  onClick,
+}) {
+  const {
+    attributes,
+    listeners,
+    setNodeRef,
+    transform,
+  } = useDraggable({
+    id: task._id,
+  });
+
   const style = {
     transform: transform
       ? `translate(${transform.x}px, ${transform.y}px)`
       : undefined,
+
     background: "white",
-    padding: "10px",
-    borderRadius: "6px",
+
+    padding: "15px",
+
+    borderRadius: "10px",
+
     boxShadow: "0 2px 6px rgba(0,0,0,0.1)",
-    marginBottom: "10px",
-    cursor: "grab",
+
+    marginBottom: "12px",
   };
 
   return (
-    <div ref={setNodeRef} {...listeners} {...attributes} style={style}>
-      <h4>{task.title}</h4>
-      <p>{task.description}</p>
-      <small>Priority: {task.priority}</small>
+    <div ref={setNodeRef} style={style}>
+      <div
+        {...listeners}
+        {...attributes}
+        style={{
+          cursor: "grab",
+
+          marginBottom: "10px",
+
+          fontSize: "14px",
+
+          color: "gray",
+        }}
+      >
+        ☰ Drag
+      </div>
+
+
+
+      <div onClick={() => onClick(task)}>
+        <div
+          style={{
+            display: "flex",
+
+            justifyContent: "space-between",
+
+            alignItems: "center",
+          }}
+        >
+          <strong>{task.title}</strong>
+
+          {task.assignee && (
+            <UserAvatar
+              name={task.assignee.username}
+            />
+          )}
+        </div>
+
+        <div
+          style={{
+            display: "flex",
+
+            gap: "10px",
+
+            marginTop: "12px",
+
+            fontSize: "12px",
+          }}
+        >
+          <span>{task.type}</span>
+
+          <span>{task.priority}</span>
+        </div>
+      </div>
     </div>
   );
 }

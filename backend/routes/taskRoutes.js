@@ -14,6 +14,6 @@ router.get("/tasks/:projectId", getTasksByProject);
 
 router.delete("/tasks/:id", deleteTask);
 
-router.patch("/:id", updateTask);
+router.patch("/tasks/:id", updateTask);
 
 module.exports = router ;

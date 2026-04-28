@@ -17,7 +17,7 @@ exports.createTask = async (req,res) => {
 
 exports.getTasksByProject = async (req,res) => {
     try {
-        const tasks = await Task.find({ project: req.params.projectID })
+        const tasks = await Task.find({ project: req.params.projectId })
             .populate("assignee", "username")
             .sort({ createdAt: -1 })
         res.json(tasks);
@@ -31,7 +31,10 @@ exports.deleteTask = async (req,res) => {
         const task = await Task.findById(req.params.id);
         if (!task) return res.status(404).json({ message: "Task not found" });
 
-        if (task.createdBy.toString() !== req.body.userId) {
+        if (
+            task.assignee?.toString() !==
+            req.body.userId
+        ) {
             return res.status(403).json({ message: "Only the creator can delete this task" })
         }
 

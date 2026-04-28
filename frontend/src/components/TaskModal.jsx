@@ -1,135 +1,301 @@
-//from mateiral UI 
-import * as React from 'react';
-import Button from '@mui/material/Button';
-import { styled } from '@mui/material/styles';
-import Dialog from '@mui/material/Dialog';
-import DialogTitle from '@mui/material/DialogTitle';
-import DialogContent from '@mui/material/DialogContent';
-import DialogActions from '@mui/material/DialogActions';
-import IconButton from '@mui/material/IconButton';
-import CloseIcon from '@mui/icons-material/Close';
-import Typography from '@mui/material/Typography';
+import * as React from "react";
+import Button from "@mui/material/Button";
+import Dialog from "@mui/material/Dialog";
+import DialogTitle from "@mui/material/DialogTitle";
+import DialogContent from "@mui/material/DialogContent";
+import DialogActions from "@mui/material/DialogActions";
+import IconButton from "@mui/material/IconButton";
+import CloseIcon from "@mui/icons-material/Close";
+import Typography from "@mui/material/Typography";
+import UserAvatar from "./UserAvatar";
 
-const BootstrapDialog = styled(Dialog)(({ theme }) => ({
-  '& .MuiDialogContent-root': {
-    padding: theme.spacing(2),
-  },
-  '& .MuiDialogActions-root': {
-    padding: theme.spacing(1),
-  },
-}));
+const defaultForm = {
+  title: "",
+  description: "",
+  assignee: "",
+  type: "Feature",
+  status: "To Do",
+  priority: "None",
+};
 
-export default function CreateTaskDialog ({ projectId, onTaskCreated }) {
-  const [open, setOpen] = React.useState(false);
+export default function TaskModal({
+  open,
+  setOpen,
+
+  selectedTask,
+
+  tasks,
+  setTasks,
+
+  projectId,
+}) {
+  const [form, setForm] =
+    React.useState(defaultForm);
+
   
-  const [form,setForm] = React.useState({
-    title: "",
-    description: "",
-    // asignee:"",
-    type:"Feature",
-    status:"Todo",
-    priority:"None"
-  })
+  React.useEffect(() => {
+    const taskData = selectedTask
+    ? {
+        title: selectedTask.title || "",
+
+        description:
+          selectedTask.description || "",
+
+        type:
+          selectedTask.type || "Feature",
+
+        status:
+          selectedTask.status || "To Do",
+
+        priority:
+          selectedTask.priority || "None",
+      }
+      : defaultForm;
+
+      setForm(taskData);
+    }, [selectedTask]);
 
   const handleChange = (e) => {
     setForm({
       ...form,
+
       [e.target.name]: e.target.value,
-    })
+    });
   };
+
 
   const handleSubmit = async () => {
     try {
-      const res = await fetch ("http://localhost:3000/api/tasks", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-        ...form,
-        project: projectId,
-        createdBy: "69d9aebcf689d13dd0d4882a"
-        })
-      });
+      if (selectedTask) {
+        const res = await fetch(
+          `http://localhost:3000/api/tasks/${selectedTask._id}`,
+          {
+            method: "PATCH",
 
-      const data = await res.json();
-      console.log("Created:", data)
+            headers: {
+              "Content-Type":
+                "application/json",
+            },
+
+            body: JSON.stringify(form),
+          }
+        );
+
+        const updatedTask =
+          await res.json();
+
+        const updatedTasks = tasks.map((t) =>
+          t._id === updatedTask._id
+            ? updatedTask
+            : t
+        );
+
+        setTasks(updatedTasks);
+      }
+
+      else {
+        const res = await fetch(
+          "http://localhost:3000/api/tasks",
+          {
+            method: "POST",
+
+            headers: {
+              "Content-Type":
+                "application/json",
+            },
+
+            body: JSON.stringify({
+              ...form,
+
+              project: projectId,
+            }),
+          }
+        );
+
+        const newTask = await res.json();
+
+        setTasks([newTask, ...tasks]);
+      }
 
       setOpen(false);
 
-      onTaskCreated && onTaskCreated();
-
+      setForm(defaultForm);
     } catch (err) {
       console.error(err);
     }
-  }
+  };
 
-return (
-    <React.Fragment>
-      <Button variant="outlined" onClick={() => setOpen(true)}>
-        Add Task
-      </Button>
+  const handleDelete = async () => {
+    try {
+      await fetch(
+        `http://localhost:3000/api/tasks/${selectedTask._id}`,
+        {
+          method: "DELETE",
+        }
+      );
 
-      <BootstrapDialog
-        onClose={() => setOpen(false)}
-        open={open}
-      >
-      <DialogTitle sx={{ m: 0, p: 2 }} id="customized-dialog-title">
-          Create Task
+      const filteredTasks = tasks.filter(
+        (t) => t._id !== selectedTask._id
+      );
+
+      setTasks(filteredTasks);
+
+      setOpen(false);
+    } catch (err) {
+      console.error(err);
+    }
+  };
+
+  return (
+    <Dialog
+      open={open}
+      onClose={() => setOpen(false)}
+      fullWidth
+      maxWidth="sm"
+    >
+      <DialogTitle>
+        {selectedTask
+          ? "Edit Task"
+          : "Create Task"}
+
         <IconButton
-          aria-label="close"
           onClick={() => setOpen(false)}
-          sx={(theme) => ({
-            position: 'absolute',
+          sx={{
+            position: "absolute",
+
             right: 8,
+
             top: 8,
-            color: theme.palette.grey[500],
-          })}
+          }}
         >
           <CloseIcon />
         </IconButton>
       </DialogTitle>
 
       <DialogContent dividers>
-          <Typography>Title</Typography>
-          <input name="title" value={form.title} onChange={handleChange} />
+        <Typography>Title</Typography>
 
-          <Typography>Description</Typography>
-          <textarea name="description" value={form.description} onChange={handleChange} />
+        <input
+          name="title"
+          value={form.title}
+          onChange={handleChange}
+          style={{
+            width: "100%",
+            marginBottom: "15px",
+          }}
+        />
 
-          <Typography>Type</Typography>
-          <select name="type" value={form.type} onChange={handleChange}>
-            <option value="Feature">Feature</option>
-            <option value="Bug">Bug</option>
-            <option value="Improvement">Improvement</option>
-          </select>
+        <Typography>Description</Typography>
 
-          <Typography>Status</Typography>
-          <select name="status" value={form.status} onChange={handleChange}>
-            <option value="Todo">Todo</option>
-            <option value="In Progress">In Progress</option>
-            <option value="In Review">In Review</option>
-            <option value="Done">Done</option>
-          </select>
+        
 
-          <Typography>Priority</Typography>
-          <select name="priority" value={form.priority} onChange={handleChange}>
-            <option value="None">None</option>
-            <option value="Low">Low</option>
-            <option value="Medium">Medium</option>
-            <option value="High">High</option>
-            <option value="Urgent">Urgent</option>
-          </select>
+
+        <textarea
+          name="description"
+          value={form.description}
+          onChange={handleChange}
+          style={{
+            width: "100%",
+            height: "120px",
+            marginBottom: "15px",
+          }}
+        />
+
+        <Typography>Type</Typography>
+
+        <select
+          name="type"
+          value={form.type}
+          onChange={handleChange}
+        >
+          <option value="Feature">
+            Feature
+          </option>
+
+          <option value="Bug">Bug</option>
+
+          <option value="Improvement">
+            Improvement
+          </option>
+        </select>
+
+        <Typography>Status</Typography>
+
+        <select
+          name="status"
+          value={form.status}
+          onChange={handleChange}
+        >
+          <option value="To Do">
+            To Do
+          </option>
+
+          <option value="In Progress">
+            In Progress
+          </option>
+
+          <option value="In Review">
+            In Review
+          </option>
+
+          <option value="Done">
+            Done
+          </option>
+        </select>
+
+        <Typography>Priority</Typography>
+
+        <select
+          name="priority"
+          value={form.priority}
+          onChange={handleChange}
+        >
+          <option value="None">
+            None
+          </option>
+
+          <option value="Low">Low</option>
+
+          <option value="Medium">
+            Medium
+          </option>
+
+          <option value="High">
+            High
+          </option>
+
+          <option value="Urgent">
+            Urgent
+          </option>
+        </select>
       </DialogContent>
 
       <DialogActions>
-          <Button onClick={() => setOpen(false)}>Cancel</Button>
-          <Button variant="contained" onClick={handleSubmit}>
-            Create
+        {/* DELETE BUTTON */}
+        {selectedTask && (
+          <Button
+            color="error"
+            onClick={handleDelete}
+          >
+            Delete
           </Button>
-      </DialogActions>
+        )}
 
-      </BootstrapDialog>
-    </React.Fragment>
+        <Button
+          onClick={() => setOpen(false)}
+        >
+          Cancel
+        </Button>
+
+        <Button
+          variant="contained"
+          onClick={handleSubmit}
+        >
+          {selectedTask
+            ? "Save Changes"
+            : "Create"}
+        </Button>
+      </DialogActions>
+    </Dialog>
   );
 }
