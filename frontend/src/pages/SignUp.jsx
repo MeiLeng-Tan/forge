@@ -42,7 +42,7 @@ export default function SignUp() {
         formData,
       );
       login(data.token, data.user);
-      navigate("/dashboard");
+      navigate("/projects");
     } catch (err) {
       setError(err.response?.data?.message || "Something went wrong.");
     } finally {

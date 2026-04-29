@@ -1,14 +1,13 @@
 import { useEffect, useState } from "react";
-
 import { useParams } from "react-router-dom";
 
 import KanbanBoard from "../components/KanbanBoard";
-
 import TaskModal from "../components/TaskModal";
 
 export default function TaskPage() {
   const { projectId } = useParams();
   const [tasks, setTasks] = useState([]);
+  const [members, setMembers] = useState([]);
   const [open, setOpen] = useState(false);
   const [selectedTask, setSelectedTask] =
     useState(null);
@@ -21,6 +20,22 @@ export default function TaskPage() {
       .then((data) => setTasks(data))
       .catch(console.error);
   }, [projectId]);
+
+  useEffect(() => {
+    const token = localStorage.getItem("token");
+
+    fetch(
+      `http://localhost:3000/api/projects/${projectId}/members`,
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      }
+    )
+      .then((res) => res.json())
+      .then((data) => setMembers(data));
+  }, [projectId]);
+
 
   const handleCreateTask = () => {
     setSelectedTask(null);
@@ -64,6 +79,7 @@ export default function TaskPage() {
         selectedTask={selectedTask}
         tasks={tasks}
         setTasks={setTasks}
+        members={members}
         projectId={projectId}
       />
     </div>

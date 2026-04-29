@@ -13,6 +13,7 @@ const {
   getUserProjects,
   getProjectProgress,
   getProjectMembers
+  getProjectMembers,
 } = require("../controllers/projectsController");
 
 router.get("/query", verifyToken, queryUser);
@@ -21,12 +22,9 @@ router.post("/new", verifyToken, createProject);
 router.get("/:projectId", getProjectById);
 router.patch("/:projectId/edit", editProject);
 router.get("/:projectId/progress", getProjectProgress);
+router.get("/:projectId/members",verifyToken,getProjectMembers);
 router.get("/:projectId", verifyToken, getProjectById);
-router.get(
-  "/:projectId/members",
-  verifyToken,
-  getProjectMembers
-);
+
 // router.patch(
 //   "/:projectId/edit",
 //   verifyToken,

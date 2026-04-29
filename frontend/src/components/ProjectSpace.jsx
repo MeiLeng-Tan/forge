@@ -110,11 +110,7 @@ const ProjectSpace = () => {
         {projects?.map((project, index) => (
           <Card key={project._id}>
             <CardActionArea
-              onClick={() => {
-                setSelectedProject(index);
-                setSelectedProjectId(project._id);
-                setOpenProjectCard(true);
-              }}
+              onClick={() => navigate(`/tasks/${project._id}`)}
               data-active={selectedProject === index ? "" : undefined}
               sx={{
                 height: "100%",

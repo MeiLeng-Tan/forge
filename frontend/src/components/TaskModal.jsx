@@ -12,7 +12,7 @@ import UserAvatar from "./UserAvatar";
 const defaultForm = {
   title: "",
   description: "",
-  assignee: "",
+  assignees: [],
   type: "Feature",
   status: "To Do",
   priority: "None",
@@ -27,6 +27,8 @@ export default function TaskModal({
   tasks,
   setTasks,
 
+  members,
+
   projectId,
 }) {
   const [form, setForm] =
@@ -34,25 +36,30 @@ export default function TaskModal({
 
   
   React.useEffect(() => {
-    const taskData = selectedTask
-    ? {
-        title: selectedTask.title || "",
+      if (selectedTask) {
+        setForm({
+          title: selectedTask.title || "",
 
-        description:
-          selectedTask.description || "",
+          description:
+            selectedTask.description || "",
 
-        type:
-          selectedTask.type || "Feature",
+          assignees:
+            selectedTask.assignees?.map(
+              (u) => u._id
+            ) || [],
 
-        status:
-          selectedTask.status || "To Do",
+          type:
+            selectedTask.type || "Feature",
 
-        priority:
-          selectedTask.priority || "None",
+          status:
+            selectedTask.status || "To Do",
+
+          priority:
+            selectedTask.priority || "None",
+        });
+      } else {
+        setForm(defaultForm);
       }
-      : defaultForm;
-
-      setForm(taskData);
     }, [selectedTask]);
 
   const handleChange = (e) => {
@@ -63,6 +70,29 @@ export default function TaskModal({
     });
   };
 
+    const handleAddAssignee = (userId) => {
+    if (form.assignees.includes(userId))
+      return;
+
+    setForm({
+      ...form,
+
+      assignees: [
+        ...form.assignees,
+        userId,
+      ],
+    });
+  };
+
+  const handleRemoveAssignee = (userId) => {
+    setForm({
+      ...form,
+
+      assignees: form.assignees.filter(
+        (id) => id !== userId
+      ),
+    });
+  };
 
   const handleSubmit = async () => {
     try {
@@ -134,17 +164,18 @@ export default function TaskModal({
         }
       );
 
-      const filteredTasks = tasks.filter(
-        (t) => t._id !== selectedTask._id
+      setTasks(
+        tasks.filter(
+          (t) => t._id !== selectedTask._id
+        )
       );
-
-      setTasks(filteredTasks);
 
       setOpen(false);
     } catch (err) {
       console.error(err);
     }
   };
+
 
   return (
     <Dialog
@@ -162,9 +193,7 @@ export default function TaskModal({
           onClick={() => setOpen(false)}
           sx={{
             position: "absolute",
-
             right: 8,
-
             top: 8,
           }}
         >
@@ -174,7 +203,6 @@ export default function TaskModal({
 
       <DialogContent dividers>
         <Typography>Title</Typography>
-
         <input
           name="title"
           value={form.title}
@@ -186,10 +214,6 @@ export default function TaskModal({
         />
 
         <Typography>Description</Typography>
-
-        
-
-
         <textarea
           name="description"
           value={form.description}
@@ -200,9 +224,94 @@ export default function TaskModal({
             marginBottom: "15px",
           }}
         />
+        
+        <Typography>
+          Assigned Users
+        </Typography>
+
+        <div
+          style={{
+            display: "flex",
+
+            gap: "10px",
+
+            flexWrap: "wrap",
+
+            marginBottom: "15px",
+          }}
+        >
+          {form.assignees.map((userId) => {
+            const user = members.find(
+              (m) => m._id === userId
+            );
+
+            if (!user) return null;
+
+            return (
+              <div
+                key={user._id}
+                style={{
+                  display: "flex",
+
+                  alignItems: "center",
+
+                  gap: "5px",
+
+                  background: "#eee",
+
+                  padding: "5px 10px",
+
+                  borderRadius: "20px",
+                }}
+              >
+                <UserAvatar
+                  name={user.username}
+                />
+
+                <span>{user.username}</span>
+
+                <button
+                  onClick={() =>
+                    handleRemoveAssignee(
+                      user._id
+                    )
+                  }
+                >
+                  x
+                </button>
+              </div>
+            );
+          })}
+        </div>
+
+        {/* ADD ASSIGNEE */}
+        <Typography>
+          Add Assignee
+        </Typography>
+
+        <select
+          onChange={(e) =>
+            handleAddAssignee(
+              e.target.value
+            )
+          }
+        >
+          <option>
+            Select User
+          </option>
+
+          {members.map((member) => (
+            <option
+              key={member._id}
+              value={member._id}
+            >
+              {member.username}
+            </option>
+          ))}
+        </select>
+
 
         <Typography>Type</Typography>
-
         <select
           name="type"
           value={form.type}
@@ -218,9 +327,9 @@ export default function TaskModal({
             Improvement
           </option>
         </select>
+      
 
         <Typography>Status</Typography>
-
         <select
           name="status"
           value={form.status}
@@ -243,8 +352,8 @@ export default function TaskModal({
           </option>
         </select>
 
-        <Typography>Priority</Typography>
 
+        <Typography>Priority</Typography>
         <select
           name="priority"
           value={form.priority}
@@ -271,7 +380,6 @@ export default function TaskModal({
       </DialogContent>
 
       <DialogActions>
-        {/* DELETE BUTTON */}
         {selectedTask && (
           <Button
             color="error"
