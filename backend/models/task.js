@@ -45,15 +45,12 @@ const taskSchema = new mongoose.Schema(
       ref: "User",
       required: false,
     },
-    comment: [
-      {
-        text: String,
-        createdAt: {
-          type: Date,
-          default: Date.now,
-        },
-      },
-    ],
+    comment: [{
+      text: String,
+      createdAt: {
+      type: Date,
+      default: Date.now,
+    }}],
   },
   {
     timestamps: true,

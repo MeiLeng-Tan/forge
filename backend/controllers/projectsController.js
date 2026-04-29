@@ -189,6 +189,32 @@ const getProjectProgress = async (req, res) => {
     res.status(500).json({ message: err.message });
   }
 };
+const getProjectMembers = async (req, res) => {
+  try {
+    const project = await Project.findById(req.params.projectId)
+      .populate("members", "username")
+      .populate("projectLead", "username");
+
+    if (!project) {
+      return res.status(404).json({ message: "Project not found" });
+    }
+
+    const allMembers = [project.projectLead, ...project.members];
+
+    const uniqueMembers = allMembers.filter(
+      (member, index, self) =>
+        index ===
+        self.findIndex((m) => m._id.toString() === member._id.toString()),
+    );
+
+    res.json(uniqueMembers);
+  } catch (err) {
+    res.status(500).json({
+      message: err.message,
+    });
+  }
+};
+
 module.exports = {
   createProject,
   getAllProjects,
@@ -199,4 +225,5 @@ module.exports = {
   queryUser,
   getProjects,
   getProjectProgress,
+  getProjectMembers,
 };

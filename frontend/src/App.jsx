@@ -7,6 +7,7 @@ import SignOut from "./pages/SignOut";
 import ProjectSpace from "./components/ProjectSpace";
 import Dashboard from "./components/Dashboard";
 import { theme } from "./styles/theme";
+import TaskPage from "./pages/TaskPage";
 
 // const theme = createTheme({
 //   palette: {
@@ -52,10 +53,16 @@ function App() {
             {/* <Route path="/tasks" element={<Task />} /> */}
             {/* <Route path="/settings" element={<Settings />} /> */}
           </Route>
+          <Route path="/project/:id" element={<TaskPage />} />
+          {/* <Route path="/" /> */}
         </Routes>
       </AuthProvider>
     </ThemeProvider>
   );
 }
+
+
+
+
 
 export default App;

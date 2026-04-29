@@ -17,16 +17,27 @@ function stringToColor(name) {
   return color;
 }
 
-function stringAvatar(name) {
+function stringAvatar(name = "") {
+  const parts = name.split(" ");
+
+  const initials =
+  parts.length > 1
+    ? `${parts[0][0]}${parts[1][0]}`
+    : `${parts[0][0]}`;
+
   return {
     sx: {
       bgcolor: stringToColor(name),
+      width: 35,
+      height: 35,
+      fontSize: "14px",
     },
-    children: `${name.split(" ")[0][0]}${name.split(" ")[1][0]}`,
+
+    children: initials.toUpperCase(),
   };
 }
 
-export default function UserAvatar({ name }) {
+export default function UserAvatar({ name, }) {
   return (
     <Stack direction="row" spacing={2}>
       <Avatar {...stringAvatar(name)} />
