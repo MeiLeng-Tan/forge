@@ -5,11 +5,11 @@ info:
 
 http:
   method: GET
-  url: http://localhost:3000/projects/:projectId
+  url: http://localhost:3000/api/projects/tasks/query?project=69ed93f2d0019cf136f02579
   params:
-    - name: projectId
-      value: 69d9c335393265f6f8fa4367
-      type: path
+    - name: project
+      value: 69ed93f2d0019cf136f02579
+      type: query
   auth: inherit
 
 settings:

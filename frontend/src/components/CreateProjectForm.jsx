@@ -26,7 +26,6 @@ import { useNavigate } from "react-router-dom";
 const CreateProjectForm = ({ onClose }) => {
   const navigate = useNavigate();
   const { user } = useAuth();
-  console.log("logged in user", user);
   const [formData, setFormData] = useState({
     projectTitle: "",
     projectKey: "",

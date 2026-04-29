@@ -9,6 +9,7 @@ import {
   Dialog,
   DialogContent,
   DialogTitle,
+  Stack,
 } from "@mui/material";
 import { useEffect, useState } from "react";
 import * as workspaceService from "../services/projectSpaceService";
@@ -17,20 +18,44 @@ import UserAvatar from "./UserAvatar";
 import AvatarGroup from "@mui/material/AvatarGroup";
 import { useAuth } from "../context/AuthContext";
 import CreateProjectForm from "./CreateProjectForm";
+import ProjectDetailsCard from "./ProjectDetailsCard";
 
 const ProjectSpace = () => {
   const { user } = useAuth();
-  console.log(user);
-  const navigate = useNavigate();
+  // const navigate = useNavigate();
   const [projects, setProjects] = useState([]);
   const [selectedProject, setSelectedProject] = useState(null);
   const [openProjectForm, setOpenProjectForm] = useState(false);
+  const [selectedProjectId, setSelectedProjectId] = useState(null);
+  const [openProjectCard, setOpenProjectCard] = useState(false);
 
   const fetchWorkspace = async () => {
-    // const workspaceData = await workspaceService.getProjects();
-    const workspaceData = await workspaceService.getProjects(user);
-    console.log(workspaceData.data.projects);
-    setProjects(workspaceData.data.projects || []);
+    try {
+      const workspaceData = await workspaceService.getProjects(user);
+      const projectsData = workspaceData.data.projects || [];
+      const projectsDataWithProgress = await Promise.all(
+        projectsData.map(async (proj) => {
+          try {
+            const progressData = await workspaceService.getProjectProgress(
+              proj._id,
+            );
+            return {
+              ...proj,
+              progress: progressData.data,
+            };
+          } catch (err) {
+            console.error(
+              `Failed to fetch progress for ${proj.projectKey}`,
+              err,
+            );
+            return { ...proj, progress: { completed: 0, total: 0 } };
+          }
+        }),
+      );
+      setProjects(projectsDataWithProgress);
+    } catch (err) {
+      console.error("Failed to fetch workspace:", err);
+    }
   };
 
   useEffect(() => {
@@ -85,7 +110,11 @@ const ProjectSpace = () => {
         {projects?.map((project, index) => (
           <Card key={project._id}>
             <CardActionArea
-              onClick={() => setSelectedProject(index)}
+              onClick={() => {
+                setSelectedProject(index);
+                setSelectedProjectId(project._id);
+                setOpenProjectCard(true);
+              }}
               data-active={selectedProject === index ? "" : undefined}
               sx={{
                 height: "100%",
@@ -96,12 +125,18 @@ const ProjectSpace = () => {
               }}
             >
               <CardContent sx={{ height: "100%" }}>
-                <Typography variant="h9" component="div">
-                  {project.projectTitle} [{project.projectKey}]
-                </Typography>
-                <Typography variant="body2" sx={{ color: "text.secondary" }}>
-                  {project.description}
-                </Typography>
+                <Stack>
+                  <Typography variant="h9">{project.projectTitle}</Typography>
+                  <Typography variant="h9">{project.projectKey}</Typography>
+                  <Typography variant="h9">
+                    {project.progress.completed} / {project.progress.total}{" "}
+                    tasks completed
+                  </Typography>
+                  <Typography variant="body2" sx={{ color: "text.secondary" }}>
+                    {project.description}
+                  </Typography>
+                </Stack>
+
                 <AvatarGroup max={4} total={project.members.length + 1}>
                   <UserAvatar
                     name={`${project.projectLead.firstName} ${project.projectLead.lastName}`}
@@ -117,6 +152,22 @@ const ProjectSpace = () => {
             </CardActionArea>
           </Card>
         ))}
+        <Dialog
+          open={openProjectCard}
+          onClose={() => setOpenProjectCard(false)}
+          fullWidth
+          maxWidth="sm"
+        >
+          <DialogContent>
+            <ProjectDetailsCard
+              projectId={selectedProjectId}
+              onClose={() => {
+                setOpenProjectCard(false);
+                fetchWorkspace();
+              }}
+            />
+          </DialogContent>
+        </Dialog>
       </Box>
     </>
   );

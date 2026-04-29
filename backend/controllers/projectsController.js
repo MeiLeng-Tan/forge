@@ -2,6 +2,7 @@ const express = require("express");
 // const router = express.Router();
 const Project = require("../models/project");
 const User = require("../models/user");
+const Task = require("../models/task");
 
 const createProject = async (req, res) => {
   const {
@@ -75,12 +76,13 @@ const getProjects = async (req, res) => {
 const getProjectById = async (req, res) => {
   try {
     const projectId = req.params.projectId;
+    console.log("backend", projectId);
     const project = await Project.findById(projectId)
-      .populate("projectLead", "username")
-      .populate("members", "username");
+      .populate("projectLead", "firstName lastName")
+      .populate("members", "firstName lastName");
 
     if (!project) {
-      return res.st(404).json({ message: "Project not found." });
+      return res.status(404).json({ message: "Project not found." });
     }
     res.status(200).json({ project });
   } catch (err) {
@@ -125,12 +127,29 @@ const queryUser = async (req, res) => {
 
 const editProject = async (req, res) => {
   try {
-    const projectId = req.params.projectId;
-    const updates = req.body;
-    const updatedProject = await Project.findByIdAndUpdate(projectId, updates, {
-      new: true,
-      runValidators: true,
-    });
+    const { projectId } = req.params;
+    const { projectTitle, projectKey, description, members, targetDate } =
+      req.body;
+
+    const memberIds = members ? members.map((m) => m._id || m) : undefined;
+
+    const updatedProject = await Project.findByIdAndUpdate(
+      projectId,
+      {
+        projectTitle,
+        projectKey,
+        description,
+        members: memberIds,
+        targetDate,
+      },
+      {
+        new: true,
+        runValidators: true,
+      },
+    )
+      .populate("projectLead")
+      .populate("members");
+
     if (!updatedProject) {
       return res.status(404).json({ message: "Project not found." });
     }
@@ -153,6 +172,23 @@ const deleteProject = async (req, res) => {
   }
 };
 
+const getProjectProgress = async (req, res) => {
+  const { projectId } = req.params;
+  try {
+    const tasks = await Task.find({ project: projectId }).populate("status");
+    const totalTasks = tasks.length;
+    const completedTasks = tasks.filter(
+      (t) => t.status?.name === "Done",
+    ).length;
+
+    res.status(200).json({
+      completed: completedTasks,
+      total: totalTasks,
+    });
+  } catch (err) {
+    res.status(500).json({ message: err.message });
+  }
+};
 module.exports = {
   createProject,
   getAllProjects,
@@ -162,4 +198,5 @@ module.exports = {
   queryProject,
   queryUser,
   getProjects,
+  getProjectProgress,
 };

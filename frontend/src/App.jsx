@@ -6,34 +6,36 @@ import SignIn from "./pages/SignIn";
 import SignOut from "./pages/SignOut";
 import ProjectSpace from "./components/ProjectSpace";
 import Dashboard from "./components/Dashboard";
+import { theme } from "./styles/theme";
 
-const theme = createTheme({
-  palette: {
-    primary: {
-      main: "#111827",
-      light: "#374151",
-      dark: "#030712",
-      contrastText: "#ffffff",
-    },
-    background: {
-      default: "#f9fafb",
-    },
-  },
-  shape: {
-    borderRadius: 8,
-  },
-  typography: {
-    fontFamily: [
-      "Inter",
-      "-apple-system",
-      "BlinkMacSystemFont",
-      '"Segoe UI"',
-      "sans-serif",
-    ].join(","),
-  },
-});
+// const theme = createTheme({
+//   palette: {
+//     primary: {
+//       main: "#111827",
+//       light: "#374151",
+//       dark: "#030712",
+//       contrastText: "#ffffff",
+//     },
+//     background: {
+//       default: "#f9fafb",
+//     },
+//   },
+//   shape: {
+//     borderRadius: 8,
+//   },
+//   typography: {
+//     fontFamily: [
+//       "Inter",
+//       "-apple-system",
+//       "BlinkMacSystemFont",
+//       '"Segoe UI"',
+//       "sans-serif",
+//     ].join(","),
+//   },
+// });
 
 import CreateTaskDialog from "./components/TaskModal";
+import ProjectDetailsCard from "./components/ProjectDetailsCard";
 
 function App() {
   return (

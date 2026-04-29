@@ -1,7 +1,5 @@
 import * as React from "react";
-import Box from "@mui/material/Box";
-import Typography from "@mui/material/Typography";
-import { createTheme } from "@mui/material/styles";
+import { Box, createTheme, Stack, Typography } from "@mui/material";
 import { AppProvider } from "@toolpad/core/AppProvider";
 import { DashboardLayout, ThemeSwitcher } from "@toolpad/core/DashboardLayout";
 import { Outlet, useNavigate } from "react-router-dom";
@@ -18,12 +16,12 @@ import {
   AccountPopoverFooter,
   SignOutButton,
 } from "@toolpad/core/Account";
-import { Stack } from "@mui/material";
 import Divider from "@mui/material/Divider";
 import ListItemText from "@mui/material/ListItemText";
 import { useSession } from "@toolpad/core/useSession";
 import { useAuth } from "../context/AuthContext";
 import UserAvatar from "./UserAvatar";
+import forgeLogo from "../assets/react.svg";
 
 const NAVIGATION = [
   {
@@ -68,7 +66,7 @@ const demoTheme = createTheme({
 
 function CustomToolbarActions() {
   return (
-    <Stack direction="row" alignItems="center">
+    <Stack direction="row">
       <ThemeSwitcher />
     </Stack>
   );
@@ -95,13 +93,11 @@ function AccountSidebarPreview(props) {
 }
 
 function SidebarFooterAccountPopover() {
-  // const { user } = useAuth();
-  // if (!user) return null;
   const session = useSession();
   if (!session?.user) return null;
   return (
     <Stack direction="column">
-      <Box sx={{ p: 2, display: "flex", alignItems: "center", gap: 2 }}>
+      <Box sx={{ p: 2, display: "flex", gap: 2 }}>
         <UserAvatar name={session.user.name} />
         <ListItemText
           primary={session.user.name}
@@ -126,9 +122,8 @@ const createPreviewComponent = (mini) => {
 };
 
 function SidebarFooterAccount({ mini }) {
-  const session = useSession(); // Ensure this is available here
+  const session = useSession();
 
-  // If there is no session, don't show the account component yet
   if (!session?.user) return null;
 
   const PreviewComponent = React.useMemo(
@@ -177,9 +172,8 @@ function SidebarFooterAccount({ mini }) {
   );
 }
 
-function Dashboard(props) {
+function Dashboard() {
   const navigate = useNavigate();
-  // const router = useDemoRouter("/dashboard");
   const { user } = useAuth();
 
   const router = React.useMemo(() => {
@@ -203,9 +197,9 @@ function Dashboard(props) {
     <AppProvider
       navigation={NAVIGATION}
       branding={{
-        logo: <img src="https://mui.com/static/logo.png" alt="MUI logo" />,
-        title: "MUI",
-        homeUrl: "/toolpad/core/introduction",
+        logo: <img src={forgeLogo} alt="FORGE logo" />,
+        title: "FORGE",
+        homeUrl: "#",
       }}
       router={router}
       theme={demoTheme}
