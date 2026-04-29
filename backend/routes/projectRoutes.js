@@ -11,17 +11,15 @@ const {
   queryUser,
   queryProject,
   getUserProjects,
+  getProjectMembers,
 } = require("../controllers/projectsController");
 
 router.get("/query", verifyToken, queryUser);
 router.get("/", verifyToken, getProjects);
 router.post("/new", verifyToken, createProject);
+router.get("/:projectId/members",verifyToken,getProjectMembers);
 router.get("/:projectId", verifyToken, getProjectById);
-router.get(
-  "/:projectId/members",
-  verifyToken,
-  getProjectMembers
-);
+
 // router.patch(
 //   "/:projectId/edit",
 //   verifyToken,

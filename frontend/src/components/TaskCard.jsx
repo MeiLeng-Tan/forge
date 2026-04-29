@@ -49,34 +49,39 @@ export default function TaskCard({
         ☰ Drag
       </div>
 
-
-
       <div onClick={() => onClick(task)}>
         <div
           style={{
             display: "flex",
 
-            justifyContent: "space-between",
-
-            alignItems: "center",
+            justifyContent:
+              "space-between",
           }}
         >
           <strong>{task.title}</strong>
 
-          {task.assignee && (
-            <UserAvatar
-              name={task.assignee.username}
-            />
-          )}
+          <div
+            style={{
+              display: "flex",
+              gap: "5px",
+            }}
+          >
+            {task.assignees?.map((user) => (
+              <UserAvatar
+                key={user._id}
+                name={user.username}
+              />
+            ))}
+          </div>
         </div>
 
         <div
           style={{
+            marginTop: "10px",
+
             display: "flex",
 
             gap: "10px",
-
-            marginTop: "12px",
 
             fontSize: "12px",
           }}

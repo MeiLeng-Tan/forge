@@ -125,9 +125,9 @@ export default function SignIn() {
         <Typography
           variant="body2"
           color="text.secondary"
-          textAlign="center"
-          mt={2.5}
+          sx={{ textAlign: "center", mt: 2.5 }}
         >
+          
           Don&apos;t have an account?{" "}
           <Link
             component={RouterLink}
