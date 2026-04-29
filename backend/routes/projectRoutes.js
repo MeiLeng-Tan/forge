@@ -12,7 +12,6 @@ const {
   queryProject,
   getUserProjects,
   getProjectProgress,
-  getProjectMembers
   getProjectMembers,
 } = require("../controllers/projectsController");
 
