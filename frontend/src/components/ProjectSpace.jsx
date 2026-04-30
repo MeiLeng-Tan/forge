@@ -126,7 +126,7 @@ const ProjectSpace = () => {
                   // setSelectedProject(index);
                   // setSelectedProjectId(project._id);
                   // setOpenTaskPage(true);
-                  navigate(`/projects/${project._id}`);
+                  navigate(`/tasks/${project._id}`);
                 }}
                 sx={{
                   height: "100%",
@@ -158,7 +158,7 @@ const ProjectSpace = () => {
                           position: "absolute",
                           top: 8,
                           right: 8,
-                          zIndex: 2, // Ensure it sits above the CardActionArea
+                          zIndex: 2,
                           color: "primary.main",
                           bgcolor: "background.paper",
                           boxShadow: 1,

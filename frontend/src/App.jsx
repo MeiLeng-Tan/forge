@@ -29,10 +29,8 @@ function App() {
           {/* DASHBOARD LAYOUT */}
           <Route path="/" element={<Dashboard />}>
             <Route path="/projects" element={<ProjectSpace />} />
+            <Route path="/tasks/:projectId" element={<TaskPage />} />
           </Route>
-
-          {/* TASK PAGE */}
-          <Route path="/tasks/:projectId" element={<TaskPage />} />
         </Routes>
       </AuthProvider>
     </ThemeProvider>

@@ -31,36 +31,27 @@ export default function TaskModal({
 
   projectId,
 }) {
-  const [form, setForm] =
-    React.useState(defaultForm);
+  const [form, setForm] = React.useState(defaultForm);
 
-  
   React.useEffect(() => {
-      if (selectedTask) {
-        setForm({
-          title: selectedTask.title || "",
+    if (selectedTask) {
+      setForm({
+        title: selectedTask.title || "",
 
-          description:
-            selectedTask.description || "",
+        description: selectedTask.description || "",
 
-          assignees:
-            selectedTask.assignees?.map(
-              (u) => u._id
-            ) || [],
+        assignees: selectedTask.assignees?.map((u) => u._id) || [],
 
-          type:
-            selectedTask.type || "Feature",
+        type: selectedTask.type || "Feature",
 
-          status:
-            selectedTask.status || "To Do",
+        status: selectedTask.status || "To Do",
 
-          priority:
-            selectedTask.priority || "None",
-        });
-      } else {
-        setForm(defaultForm);
-      }
-    }, [selectedTask]);
+        priority: selectedTask.priority || "None",
+      });
+    } else {
+      setForm(defaultForm);
+    }
+  }, [selectedTask]);
 
   const handleChange = (e) => {
     setForm({
@@ -70,17 +61,13 @@ export default function TaskModal({
     });
   };
 
-    const handleAddAssignee = (userId) => {
-    if (form.assignees.includes(userId))
-      return;
+  const handleAddAssignee = (userId) => {
+    if (form.assignees.includes(userId)) return;
 
     setForm({
       ...form,
 
-      assignees: [
-        ...form.assignees,
-        userId,
-      ],
+      assignees: [...form.assignees, userId],
     });
   };
 
@@ -88,9 +75,7 @@ export default function TaskModal({
     setForm({
       ...form,
 
-      assignees: form.assignees.filter(
-        (id) => id !== userId
-      ),
+      assignees: form.assignees.filter((id) => id !== userId),
     });
   };
 
@@ -98,40 +83,33 @@ export default function TaskModal({
     try {
       if (selectedTask) {
         const res = await fetch(
-          `http://localhost:3000/api/tasks/${selectedTask._id}`,
+          `${import.meta.env.VITE_BACK_END_SERVER_URL}/api/tasks/${selectedTask._id}`,
           {
             method: "PATCH",
 
             headers: {
-              "Content-Type":
-                "application/json",
+              "Content-Type": "application/json",
             },
 
             body: JSON.stringify(form),
-          }
+          },
         );
 
-        const updatedTask =
-          await res.json();
+        const updatedTask = await res.json();
 
         const updatedTasks = tasks.map((t) =>
-          t._id === updatedTask._id
-            ? updatedTask
-            : t
+          t._id === updatedTask._id ? updatedTask : t,
         );
 
         setTasks(updatedTasks);
-      }
-
-      else {
+      } else {
         const res = await fetch(
-          "http://localhost:3000/api/tasks",
+          `${import.meta.env.VITE_BACK_END_SERVER_URL}/api/tasks`,
           {
             method: "POST",
 
             headers: {
-              "Content-Type":
-                "application/json",
+              "Content-Type": "application/json",
             },
 
             body: JSON.stringify({
@@ -139,7 +117,7 @@ export default function TaskModal({
 
               project: projectId,
             }),
-          }
+          },
         );
 
         const newTask = await res.json();
@@ -158,17 +136,13 @@ export default function TaskModal({
   const handleDelete = async () => {
     try {
       await fetch(
-        `http://localhost:3000/api/tasks/${selectedTask._id}`,
+        `${import.meta.env.VITE_BACK_END_SERVER_URL}/api/tasks/${selectedTask._id}`,
         {
           method: "DELETE",
-        }
+        },
       );
 
-      setTasks(
-        tasks.filter(
-          (t) => t._id !== selectedTask._id
-        )
-      );
+      setTasks(tasks.filter((t) => t._id !== selectedTask._id));
 
       setOpen(false);
     } catch (err) {
@@ -176,18 +150,10 @@ export default function TaskModal({
     }
   };
 
-
   return (
-    <Dialog
-      open={open}
-      onClose={() => setOpen(false)}
-      fullWidth
-      maxWidth="sm"
-    >
+    <Dialog open={open} onClose={() => setOpen(false)} fullWidth maxWidth="sm">
       <DialogTitle>
-        {selectedTask
-          ? "Edit Task"
-          : "Create Task"}
+        {selectedTask ? "Edit Task" : "Create Task"}
 
         <IconButton
           onClick={() => setOpen(false)}
@@ -224,10 +190,8 @@ export default function TaskModal({
             marginBottom: "15px",
           }}
         />
-        
-        <Typography>
-          Assigned Users
-        </Typography>
+
+        <Typography>Assigned Users</Typography>
 
         <div
           style={{
@@ -241,9 +205,7 @@ export default function TaskModal({
           }}
         >
           {form.assignees.map((userId) => {
-            const user = members.find(
-              (m) => m._id === userId
-            );
+            const user = members.find((m) => m._id === userId);
 
             if (!user) return null;
 
@@ -264,19 +226,11 @@ export default function TaskModal({
                   borderRadius: "20px",
                 }}
               >
-                <UserAvatar
-                  name={user.username}
-                />
+                <UserAvatar name={user.username} />
 
                 <span>{user.username}</span>
 
-                <button
-                  onClick={() =>
-                    handleRemoveAssignee(
-                      user._id
-                    )
-                  }
-                >
+                <button onClick={() => handleRemoveAssignee(user._id)}>
                   x
                 </button>
               </div>
@@ -285,123 +239,63 @@ export default function TaskModal({
         </div>
 
         {/* ADD ASSIGNEE */}
-        <Typography>
-          Add Assignee
-        </Typography>
+        <Typography>Add Assignee</Typography>
 
-        <select
-          onChange={(e) =>
-            handleAddAssignee(
-              e.target.value
-            )
-          }
-        >
-          <option>
-            Select User
-          </option>
+        <select onChange={(e) => handleAddAssignee(e.target.value)}>
+          <option>Select User</option>
 
           {members.map((member) => (
-            <option
-              key={member._id}
-              value={member._id}
-            >
+            <option key={member._id} value={member._id}>
               {member.username}
             </option>
           ))}
         </select>
 
-
         <Typography>Type</Typography>
-        <select
-          name="type"
-          value={form.type}
-          onChange={handleChange}
-        >
-          <option value="Feature">
-            Feature
-          </option>
+        <select name="type" value={form.type} onChange={handleChange}>
+          <option value="Feature">Feature</option>
 
           <option value="Bug">Bug</option>
 
-          <option value="Improvement">
-            Improvement
-          </option>
+          <option value="Improvement">Improvement</option>
         </select>
-      
 
         <Typography>Status</Typography>
-        <select
-          name="status"
-          value={form.status}
-          onChange={handleChange}
-        >
-          <option value="To Do">
-            To Do
-          </option>
+        <select name="status" value={form.status} onChange={handleChange}>
+          <option value="To Do">To Do</option>
 
-          <option value="In Progress">
-            In Progress
-          </option>
+          <option value="In Progress">In Progress</option>
 
-          <option value="In Review">
-            In Review
-          </option>
+          <option value="In Review">In Review</option>
 
-          <option value="Done">
-            Done
-          </option>
+          <option value="Done">Done</option>
         </select>
 
-
         <Typography>Priority</Typography>
-        <select
-          name="priority"
-          value={form.priority}
-          onChange={handleChange}
-        >
-          <option value="None">
-            None
-          </option>
+        <select name="priority" value={form.priority} onChange={handleChange}>
+          <option value="None">None</option>
 
           <option value="Low">Low</option>
 
-          <option value="Medium">
-            Medium
-          </option>
+          <option value="Medium">Medium</option>
 
-          <option value="High">
-            High
-          </option>
+          <option value="High">High</option>
 
-          <option value="Urgent">
-            Urgent
-          </option>
+          <option value="Urgent">Urgent</option>
         </select>
       </DialogContent>
 
       <DialogActions>
         {selectedTask && (
-          <Button
-            color="error"
-            onClick={handleDelete}
-          >
+          <Button color="error" onClick={handleDelete}>
             Delete
           </Button>
         )}
 
-        <Button
-          onClick={() => setOpen(false)}
-        >
-          Cancel
-        </Button>
+        <Button onClick={() => setOpen(false)}>Cancel</Button>
 
-        <Button
-          variant="contained"
-          onClick={handleSubmit}
-        >
-          {selectedTask
-            ? "Save Changes"
-            : "Create"}
+        <Button variant="contained" onClick={handleSubmit}>
+          {selectedTask ? "Save Changes" : "Create"}
         </Button>
       </DialogActions>
     </Dialog>

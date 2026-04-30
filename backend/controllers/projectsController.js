@@ -177,9 +177,7 @@ const getProjectProgress = async (req, res) => {
   try {
     const tasks = await Task.find({ project: projectId }).populate("status");
     const totalTasks = tasks.length;
-    const completedTasks = tasks.filter(
-      (t) => t.status?.name === "Done",
-    ).length;
+    const completedTasks = tasks.filter((t) => t.status === "Done").length;
 
     res.status(200).json({
       completed: completedTasks,
