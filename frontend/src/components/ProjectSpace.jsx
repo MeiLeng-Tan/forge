@@ -20,15 +20,17 @@ import { useAuth } from "../context/AuthContext";
 import CreateProjectForm from "./CreateProjectForm";
 import EditIcon from "@mui/icons-material/Edit";
 import EditProjectForm from "./EditProjectForm";
-import TaskModal from "./TaskModal";
+import TaskPage from "../pages/TaskPage";
+import { useNavigate } from "react-router-dom";
 
 const ProjectSpace = () => {
   const { user } = useAuth();
+  const navigate = useNavigate();
   const [projects, setProjects] = useState([]);
   const [selectedProject, setSelectedProject] = useState(null);
   const [openProjectForm, setOpenProjectForm] = useState(false);
   const [selectedProjectId, setSelectedProjectId] = useState(null);
-  const [openProjectCard, setOpenProjectCard] = useState(false);
+  const [openTaskPage, setOpenTaskPage] = useState(false);
   const [openEditForm, setOpenEditForm] = useState(false);
 
   const fetchWorkspace = async () => {
@@ -121,9 +123,10 @@ const ProjectSpace = () => {
             <Card key={project._id} sx={{ position: "relative" }}>
               <CardActionArea
                 onClick={() => {
-                  setSelectedProject(index);
-                  setSelectedProjectId(project._id);
-                  setOpenProjectCard(true);
+                  // setSelectedProject(index);
+                  // setSelectedProjectId(project._id);
+                  // setOpenTaskPage(true);
+                  navigate(`/projects/${project._id}`);
                 }}
                 sx={{
                   height: "100%",
@@ -206,22 +209,7 @@ const ProjectSpace = () => {
             </Card>
           );
         })}
-        <Dialog
-          open={openProjectCard}
-          onClose={() => setOpenProjectCard(false)}
-          fullWidth
-          maxWidth="sm"
-        >
-          <DialogContent>
-            <TaskModal
-              projectId={selectedProjectId}
-              onClose={() => {
-                setOpenProjectCard(false);
-                fetchWorkspace();
-              }}
-            />
-          </DialogContent>
-        </Dialog>
+
         <Dialog
           open={openEditForm}
           onClose={() => setOpenEditForm(false)}

@@ -109,7 +109,7 @@ function EditProjectForm({ projectId, onClose }) {
           <TextField
             label="Description"
             fullWidth
-            multipline
+            multiline
             rows={3}
             value={editForm.description || ""}
             onChange={(e) =>

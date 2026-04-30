@@ -143,6 +143,7 @@ const CreateProjectForm = ({ onClose }) => {
           <TextField
             required
             multiline
+            rows={3}
             name="description"
             id="description-input"
             label="Project Description"
@@ -237,7 +238,7 @@ const CreateProjectForm = ({ onClose }) => {
           </TextField>
           <Box>
             <Button variant="outlined" fullWidth onClick={onClose}>
-              Back
+              Cancel
             </Button>
             <Button
               type="submit"
