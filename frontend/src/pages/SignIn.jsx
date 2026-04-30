@@ -11,6 +11,7 @@ import {
   Alert,
   Link,
 } from "@mui/material";
+import forgeLogo from "../assets/FORGE.png";
 
 export default function SignIn() {
   const navigate = useNavigate();
@@ -62,11 +63,15 @@ export default function SignIn() {
           maxWidth: 448,
           p: 4,
           border: "1px solid",
-          borderColor: "grey.200",
+          borderColor: "divider",
           borderRadius: 3,
+          textAlign: "center",
         }}
       >
-        <Typography variant="h5" fontWeight={600} color="grey.900" mb={0.5}>
+        <Box mb={3}>
+          <img src={forgeLogo} alt="Forge Logo" style={{ height: 40 }} />
+        </Box>
+        <Typography variant="h5" fontWeight={700} color="text.primary" mb={0.5}>
           Welcome back
         </Typography>
         <Typography variant="body2" color="text.secondary" mb={3}>
@@ -82,7 +87,7 @@ export default function SignIn() {
         <Box
           component="form"
           onSubmit={handleSubmit}
-          sx={{ display: "flex", flexDirection: "column", gap: 2 }}
+          sx={{ display: "flex", flexDirection: "column", gap: 2.5 }}
         >
           <TextField
             label="Email"
@@ -116,23 +121,18 @@ export default function SignIn() {
             color="primary"
             fullWidth
             disabled={loading}
-            sx={{ mt: 0.5, py: 1 }}
+            sx={{ mt: 1, py: 1.2, fontWeight: 700, fontSize: "0.95rem" }}
           >
             {loading ? "Signing in..." : "Sign in"}
           </Button>
         </Box>
 
-        <Typography
-          variant="body2"
-          color="text.secondary"
-          textAlign="center"
-          mt={2.5}
-        >
+        <Typography variant="body2" color="text.secondary" mt={2.5}>
           Don&apos;t have an account?{" "}
           <Link
             component={RouterLink}
             to="/signup"
-            color="grey.900"
+            color="primary"
             fontWeight={500}
             underline="hover"
           >

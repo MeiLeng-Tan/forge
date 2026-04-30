@@ -12,6 +12,7 @@ import {
   Link,
   Grid,
 } from "@mui/material";
+import forgeLogo from "../assets/FORGE.png";
 
 export default function SignUp() {
   const navigate = useNavigate();
@@ -55,7 +56,6 @@ export default function SignUp() {
       sx={{
         minHeight: "100vh",
         display: "flex",
-        alignItems: "center",
         justifyContent: "center",
         bgcolor: "background.default",
       }}
@@ -67,11 +67,14 @@ export default function SignUp() {
           maxWidth: 448,
           p: 4,
           border: "1px solid",
-          borderColor: "grey.200",
+          borderColor: "divider",
           borderRadius: 3,
         }}
       >
-        <Typography variant="h5" fontWeight={600} color="grey.900" mb={0.5}>
+        <Box mb={2} textAlign="center">
+          <img src={forgeLogo} alt="Forge Logo" style={{ height: 36 }} />
+        </Box>
+        <Typography variant="h5" fontWeight={700} color="text.primary" mb={0.5}>
           Create your account
         </Typography>
         <Typography variant="body2" color="text.secondary" mb={3}>
@@ -162,7 +165,6 @@ export default function SignUp() {
           <Button
             type="submit"
             variant="contained"
-            color="primary"
             fullWidth
             disabled={loading}
             sx={{ mt: 0.5, py: 1 }}
@@ -171,17 +173,12 @@ export default function SignUp() {
           </Button>
         </Box>
 
-        <Typography
-          variant="body2"
-          color="text.secondary"
-          textAlign="center"
-          mt={2.5}
-        >
+        <Typography variant="body2" color="text.secondary" mt={2.5}>
           Already have an account?{" "}
           <Link
             component={RouterLink}
             to="/signin"
-            color="grey.900"
+            color="divider"
             fontWeight={500}
             underline="hover"
           >
