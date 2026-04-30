@@ -6,6 +6,7 @@ import {
   CardActionArea,
   CardActions,
   Button,
+  IconButton,
   Dialog,
   DialogContent,
   DialogTitle,
@@ -13,21 +14,22 @@ import {
 } from "@mui/material";
 import { useEffect, useState } from "react";
 import * as workspaceService from "../services/projectSpaceService";
-import { useNavigate } from "react-router";
 import UserAvatar from "./UserAvatar";
 import AvatarGroup from "@mui/material/AvatarGroup";
 import { useAuth } from "../context/AuthContext";
 import CreateProjectForm from "./CreateProjectForm";
-import ProjectDetailsCard from "./ProjectDetailsCard";
+import EditIcon from "@mui/icons-material/Edit";
+import EditProjectForm from "./EditProjectForm";
+import TaskModal from "./TaskModal";
 
 const ProjectSpace = () => {
   const { user } = useAuth();
-  // const navigate = useNavigate();
   const [projects, setProjects] = useState([]);
   const [selectedProject, setSelectedProject] = useState(null);
   const [openProjectForm, setOpenProjectForm] = useState(false);
   const [selectedProjectId, setSelectedProjectId] = useState(null);
   const [openProjectCard, setOpenProjectCard] = useState(false);
+  const [openEditForm, setOpenEditForm] = useState(false);
 
   const fetchWorkspace = async () => {
     try {
@@ -75,19 +77,25 @@ const ProjectSpace = () => {
       >
         <Card>
           <CardActionArea
-            sx={{ height: "100%", border: "1px dashed grey" }}
+            sx={{
+              height: "100%",
+              border: "2px dashed",
+              borderColor: "divider",
+              transition: "all 0.2s ease-in-out",
+              "&:hover": {
+                borderColor: "primary.main",
+                bgcolor: "rgba(107, 33, 168, 0.02)",
+              },
+            }}
             onClick={() => setOpenProjectForm(true)}
           >
             <CardContent
               sx={{
-                height: "100%",
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "center",
+                textAlign: "center",
               }}
             >
-              <Typography variant="h6" color="primary">
-                + Create New Project
+              <Typography variant="h6" color="primary" sx={{ opacity: 0.8 }}>
+                + New Project
               </Typography>
             </CardContent>
           </CardActionArea>
@@ -107,47 +115,97 @@ const ProjectSpace = () => {
             </DialogContent>
           </Dialog>
         </Card>
-        {projects?.map((project, index) => (
-          <Card key={project._id}>
-            <CardActionArea
-              onClick={() => navigate(`/tasks/${project._id}`)}
-              data-active={selectedProject === index ? "" : undefined}
-              sx={{
-                height: "100%",
-                "&[data-active]": {
-                  backgroundColor: "action.selected",
-                  "&:hover": { backgroundColor: "action.selectedHover" },
-                },
-              }}
-            >
-              <CardContent sx={{ height: "100%" }}>
-                <Stack>
-                  <Typography variant="h9">{project.projectTitle}</Typography>
-                  <Typography variant="h9">{project.projectKey}</Typography>
-                  <Typography variant="h9">
+        {projects?.map((project, index) => {
+          const isProjectLead = user && project?.projectLead?._id === user._id;
+          return (
+            <Card key={project._id} sx={{ position: "relative" }}>
+              <CardActionArea
+                onClick={() => {
+                  setSelectedProject(index);
+                  setSelectedProjectId(project._id);
+                  setOpenProjectCard(true);
+                }}
+                sx={{
+                  height: "100%",
+                }}
+              >
+                <CardContent>
+                  <Stack spacing={1}>
+                    <Stack
+                      direction="row"
+                      justifyContent="space-between"
+                      alignItems="flex-start"
+                    ></Stack>
+                    <Box>
+                      <Typography
+                        variant="caption"
+                        color="text.secondary"
+                        sx={{ fontWeight: 700 }}
+                      >
+                        {project.projectKey}
+                      </Typography>
+                      <Typography variant="h6" sx={{ lineHeight: 1.2, mb: 1 }}>
+                        {project.projectTitle}
+                      </Typography>
+                    </Box>
+                    {isProjectLead && (
+                      <IconButton
+                        size="small"
+                        sx={{
+                          position: "absolute",
+                          top: 8,
+                          right: 8,
+                          zIndex: 2, // Ensure it sits above the CardActionArea
+                          color: "primary.main",
+                          bgcolor: "background.paper",
+                          boxShadow: 1,
+                          "&:hover": {
+                            bgcolor: "primary.main",
+                            color: "white",
+                          },
+                        }}
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          setSelectedProjectId(project._id);
+                          setOpenEditForm(true);
+                        }}
+                      >
+                        <EditIcon fontSize="small" />
+                      </IconButton>
+                    )}
+                  </Stack>
+                  <Typography
+                    variant="body2"
+                    color="text.secondary"
+                    sx={{ height: 40, overflow: "hidden" }}
+                  >
+                    {project.description}
+                  </Typography>
+                  <Typography variant="caption" sx={{ fontWeight: 600 }}>
                     {project.progress.completed} / {project.progress.total}{" "}
                     tasks completed
                   </Typography>
-                  <Typography variant="body2" sx={{ color: "text.secondary" }}>
-                    {project.description}
-                  </Typography>
-                </Stack>
 
-                <AvatarGroup max={4} total={project.members.length + 1}>
-                  <UserAvatar
-                    name={`${project.projectLead.firstName} ${project.projectLead.lastName}`}
-                  />
-                  {project.members.map((member) => (
+                  <AvatarGroup
+                    max={4}
+                    total={project.members.length + 1}
+                    sx={{ justifyContent: "flex-end", mt: 1 }}
+                  >
                     <UserAvatar
-                      key={member._id}
-                      name={`${member.firstName} ${member.lastName}`}
+                      name={`${project.projectLead.firstName} ${project.projectLead.lastName}`}
                     />
-                  ))}
-                </AvatarGroup>
-              </CardContent>
-            </CardActionArea>
-          </Card>
-        ))}
+                    {project.members.map((member) => (
+                      <UserAvatar
+                        key={member._id}
+                        name={`${member.firstName} ${member.lastName}`}
+                      />
+                    ))}
+                  </AvatarGroup>
+                </CardContent>
+              </CardActionArea>
+            </Card>
+          );
+        })}
         <Dialog
           open={openProjectCard}
           onClose={() => setOpenProjectCard(false)}
@@ -155,10 +213,26 @@ const ProjectSpace = () => {
           maxWidth="sm"
         >
           <DialogContent>
-            <ProjectDetailsCard
+            <TaskModal
               projectId={selectedProjectId}
               onClose={() => {
                 setOpenProjectCard(false);
+                fetchWorkspace();
+              }}
+            />
+          </DialogContent>
+        </Dialog>
+        <Dialog
+          open={openEditForm}
+          onClose={() => setOpenEditForm(false)}
+          fullWidth
+          maxWidth="sm"
+        >
+          <DialogContent>
+            <EditProjectForm
+              projectId={selectedProjectId}
+              onClose={() => {
+                setOpenEditForm(false);
                 fetchWorkspace();
               }}
             />

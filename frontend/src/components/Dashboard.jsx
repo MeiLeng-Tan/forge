@@ -1,15 +1,8 @@
-import * as React from "react";
-import { Box, createTheme, Stack, Typography } from "@mui/material";
+import { Box, Stack, Typography } from "@mui/material";
 import { AppProvider } from "@toolpad/core/AppProvider";
 import { DashboardLayout, ThemeSwitcher } from "@toolpad/core/DashboardLayout";
 import { Outlet, useNavigate } from "react-router-dom";
 import DashboardIcon from "@mui/icons-material/Dashboard";
-import ListAltIcon from "@mui/icons-material/ListAlt"; // Tasks
-// import WorkOutlineIcon from "@mui/icons-material/WorkOutline"; // Projects
-import BarChartIcon from "@mui/icons-material/BarChart"; // Reports
-import PeopleOutlinedIcon from "@mui/icons-material/PeopleOutlined";
-import SettingsIcon from "@mui/icons-material/Settings";
-import AddBoxOutlinedIcon from "@mui/icons-material/AddBoxOutlined";
 import {
   Account,
   AccountPreview,
@@ -21,7 +14,9 @@ import ListItemText from "@mui/material/ListItemText";
 import { useSession } from "@toolpad/core/useSession";
 import { useAuth } from "../context/AuthContext";
 import UserAvatar from "./UserAvatar";
-import forgeLogo from "../assets/react.svg";
+import forgeLogo from "../assets/FORGE.png";
+import { theme } from "../styles/theme";
+import { useMemo, useState } from "react";
 
 const NAVIGATION = [
   {
@@ -33,36 +28,7 @@ const NAVIGATION = [
     title: "Projects",
     icon: <DashboardIcon />,
   },
-  {
-    segment: "tasks",
-    title: "My Tasks",
-    icon: <ListAltIcon />,
-  },
-  {
-    kind: "divider",
-  },
-  {
-    segment: "settings",
-    title: "Settings",
-    icon: <SettingsIcon />,
-  },
 ];
-
-const demoTheme = createTheme({
-  cssVariables: {
-    colorSchemeSelector: "data-toolpad-color-scheme",
-  },
-  colorSchemes: { light: true, dark: true },
-  breakpoints: {
-    values: {
-      xs: 0,
-      sm: 600,
-      md: 600,
-      lg: 1200,
-      xl: 1536,
-    },
-  },
-});
 
 function CustomToolbarActions() {
   return (
@@ -126,10 +92,7 @@ function SidebarFooterAccount({ mini }) {
 
   if (!session?.user) return null;
 
-  const PreviewComponent = React.useMemo(
-    () => createPreviewComponent(mini),
-    [mini],
-  );
+  const PreviewComponent = useMemo(() => createPreviewComponent(mini), [mini]);
   return (
     <Box sx={{ p: 2 }}>
       <Account
@@ -176,7 +139,7 @@ function Dashboard() {
   const navigate = useNavigate();
   const { user } = useAuth();
 
-  const router = React.useMemo(() => {
+  const router = useMemo(() => {
     return {
       pathname: location.pathname,
       searchParams: new URLSearchParams(location.search),
@@ -191,18 +154,18 @@ function Dashboard() {
     },
   };
 
-  const [session, setSession] = React.useState(userSession);
+  const [session, setSession] = useState(userSession);
 
   return (
     <AppProvider
       navigation={NAVIGATION}
       branding={{
-        logo: <img src={forgeLogo} alt="FORGE logo" />,
-        title: "FORGE",
+        logo: <img src={forgeLogo} alt="FORGE logo" style={{ height: 50 }} />,
+        title: "",
         homeUrl: "#",
       }}
       router={router}
-      theme={demoTheme}
+      theme={theme}
       session={session}
       authentication={{
         signOut: () => {
