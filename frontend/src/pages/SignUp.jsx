@@ -13,6 +13,7 @@ import {
   Grid,
 } from "@mui/material";
 import forgeLogo from "../assets/FORGE.png";
+import loginBg from "../assets/forge_login_background_img.png";
 
 export default function SignUp() {
   const navigate = useNavigate();
@@ -57,7 +58,10 @@ export default function SignUp() {
         minHeight: "100vh",
         display: "flex",
         justifyContent: "center",
-        bgcolor: "background.default",
+        backgroundImage: `url(${loginBg})`,
+        backgroundSize: "cover",
+        backgroundPosition: "center",
+        backgroundRepeat: "no-repeat",
       }}
     >
       <Paper
@@ -72,7 +76,9 @@ export default function SignUp() {
         }}
       >
         <Box mb={2} textAlign="center">
-          <img src={forgeLogo} alt="Forge Logo" style={{ height: 36 }} />
+          <RouterLink to="/projects">
+            <img src={forgeLogo} alt="Forge Logo" style={{ height: 36 }} />
+          </RouterLink>
         </Box>
         <Typography variant="h5" fontWeight={700} color="text.primary" mb={0.5}>
           Create your account

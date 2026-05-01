@@ -119,6 +119,7 @@ export default function TaskModal({
     setFormError("");
 
     try {
+      const token = localStorage.getItem("token");
       if (selectedTask) {
         const res = await fetch(
           `${import.meta.env.VITE_BACK_END_SERVER_URL}/api/tasks/${selectedTask._id}`,
@@ -127,6 +128,7 @@ export default function TaskModal({
 
             headers: {
               "Content-Type": "application/json",
+              Authorization: `Bearer ${token}`,
             },
 
             body: JSON.stringify(form),
@@ -148,6 +150,7 @@ export default function TaskModal({
 
             headers: {
               "Content-Type": "application/json",
+              Authorization: `Bearer ${token}`,
             },
 
             body: JSON.stringify({
@@ -171,10 +174,12 @@ export default function TaskModal({
 
   const handleDelete = async () => {
     try {
+      const token = localStorage.getItem("token");
       await fetch(
         `${import.meta.env.VITE_BACK_END_SERVER_URL}/api/tasks/${selectedTask._id}`,
         {
           method: "DELETE",
+          headers: { Authorization: `Bearer ${token}` },
         },
       );
 

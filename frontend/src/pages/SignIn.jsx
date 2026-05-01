@@ -12,6 +12,7 @@ import {
   Link,
 } from "@mui/material";
 import forgeLogo from "../assets/FORGE.png";
+import loginBg from "../assets/forge_login_background_img.png";
 
 export default function SignIn() {
   const navigate = useNavigate();
@@ -53,7 +54,10 @@ export default function SignIn() {
         display: "flex",
         alignItems: "center",
         justifyContent: "center",
-        bgcolor: "background.default",
+        backgroundImage: `url(${loginBg})`,
+        backgroundSize: "cover",
+        backgroundPosition: "center",
+        backgroundRepeat: "no-repeat",
       }}
     >
       <Paper
@@ -69,7 +73,9 @@ export default function SignIn() {
         }}
       >
         <Box mb={3}>
-          <img src={forgeLogo} alt="Forge Logo" style={{ height: 40 }} />
+          <RouterLink to="/projects">
+            <img src={forgeLogo} alt="Forge Logo" style={{ height: 40 }} />
+          </RouterLink>
         </Box>
         <Typography variant="h5" fontWeight={700} color="text.primary" mb={0.5}>
           Welcome back

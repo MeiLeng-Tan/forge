@@ -138,6 +138,7 @@ export default function KanbanBoard({ tasks, setTasks, onTaskClick }) {
     setTasks(updatedTasks);
 
     try {
+      const token = localStorage.getItem("token");
       await fetch(
         `${import.meta.env.VITE_BACK_END_SERVER_URL}/api/tasks/${taskId}`,
         {
@@ -145,6 +146,7 @@ export default function KanbanBoard({ tasks, setTasks, onTaskClick }) {
 
           headers: {
             "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
           },
 
           body: JSON.stringify({

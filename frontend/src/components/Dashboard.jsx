@@ -1,7 +1,7 @@
 import { Box, Stack, Typography } from "@mui/material";
 import { AppProvider } from "@toolpad/core/AppProvider";
 import { DashboardLayout, ThemeSwitcher } from "@toolpad/core/DashboardLayout";
-import { Outlet, useNavigate } from "react-router-dom";
+import { Outlet, useNavigate, useLocation } from "react-router-dom";
 import DashboardIcon from "@mui/icons-material/Dashboard";
 import {
   Account,
@@ -137,6 +137,7 @@ function SidebarFooterAccount({ mini }) {
 
 function Dashboard() {
   const navigate = useNavigate();
+  const location = useLocation();
   const { user } = useAuth();
 
   const router = useMemo(() => {
@@ -162,7 +163,7 @@ function Dashboard() {
       branding={{
         logo: <img src={forgeLogo} alt="FORGE logo" style={{ height: 50 }} />,
         title: "",
-        homeUrl: "#",
+        homeUrl: "/projects",
       }}
       router={router}
       theme={theme}

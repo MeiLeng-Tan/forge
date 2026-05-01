@@ -10,6 +10,7 @@ import dayjs from "dayjs";
 import KanbanBoard from "../components/KanbanBoard";
 import TaskModal from "../components/TaskModal";
 import { getProjectDetails } from "../services/projectSpaceService";
+import api from "../services/api";
 
 export default function TaskPage() {
   const { projectId } = useParams();
@@ -40,8 +41,12 @@ export default function TaskPage() {
   }, [projectId]);
 
   useEffect(() => {
+    const token = localStorage.getItem("token");
     fetch(
-      `${import.meta.env.VITE_BACK_END_SERVER_URL}/api/tasks/${projectId}`
+      `${import.meta.env.VITE_BACK_END_SERVER_URL}/api/tasks/${projectId}`,
+      {
+        headers: { Authorization: `Bearer ${token}` },
+      }
     )
       .then((res) => res.json())
       .then((data) => setTasks(data))

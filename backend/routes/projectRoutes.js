@@ -18,18 +18,10 @@ const {
 router.get("/query", verifyToken, queryUser);
 router.get("/", verifyToken, getProjects);
 router.post("/new", verifyToken, createProject);
-router.get("/:projectId", getProjectById);
-router.patch("/:projectId/edit", editProject);
-router.get("/:projectId/progress", getProjectProgress);
-router.get("/:projectId/members",verifyToken,getProjectMembers);
 router.get("/:projectId", verifyToken, getProjectById);
-
-// router.patch(
-//   "/:projectId/edit",
-//   verifyToken,
-//   requireRole("admin"),
-//   editProject,
-// );
-// router.delete("/:projectId", verifyToken, requireRole("admin"), deleteProject);
+router.get("/:projectId/progress", verifyToken, getProjectProgress);
+router.get("/:projectId/members", verifyToken, getProjectMembers);
+router.patch("/:projectId/edit", verifyToken, requireRole("admin"), editProject);
+router.delete("/:projectId", verifyToken, requireRole("admin"), deleteProject);
 
 module.exports = router;
