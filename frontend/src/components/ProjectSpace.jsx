@@ -12,6 +12,7 @@ import {
   DialogTitle,
   Stack,
 } from "@mui/material";
+import { useTheme } from "@mui/material/styles";
 import { useEffect, useState } from "react";
 import * as workspaceService from "../services/projectSpaceService";
 import UserAvatar from "./UserAvatar";
@@ -26,6 +27,8 @@ import { useNavigate } from "react-router-dom";
 const ProjectSpace = () => {
   const { user } = useAuth();
   const navigate = useNavigate();
+  const theme = useTheme();
+  const isDark = theme.palette.mode === "dark";
   const [projects, setProjects] = useState([]);
   const [selectedProject, setSelectedProject] = useState(null);
   const [openProjectForm, setOpenProjectForm] = useState(false);
@@ -96,7 +99,13 @@ const ProjectSpace = () => {
                 textAlign: "center",
               }}
             >
-              <Typography variant="h6" color="primary" sx={{ opacity: 0.8 }}>
+              <Typography
+                variant="h6"
+                sx={{
+                  opacity: 0.9,
+                  color: isDark ? "text.primary" : "primary.main",
+                }}
+              >
                 + New Project
               </Typography>
             </CardContent>

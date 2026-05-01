@@ -7,16 +7,25 @@ import DialogActions from "@mui/material/DialogActions";
 import IconButton from "@mui/material/IconButton";
 import CloseIcon from "@mui/icons-material/Close";
 import Typography from "@mui/material/Typography";
-import UserAvatar from "./UserAvatar";
+import TextField from "@mui/material/TextField";
+import MenuItem from "@mui/material/MenuItem";
+import Stack from "@mui/material/Stack";
+import Chip from "@mui/material/Chip";
+import Avatar from "@mui/material/Avatar";
+import Alert from "@mui/material/Alert";
 
-const defaultForm = {
-  title: "",
-  description: "",
-  assignees: [],
-  type: "Feature",
-  status: "To Do",
-  priority: "None",
-};
+const VALIDATION_MESSAGE = "Please fill in compulsory field.";
+
+function createEmptyForm() {
+  return {
+    title: "",
+    description: "",
+    assignees: [],
+    type: "",
+    status: "",
+    priority: "",
+  };
+}
 
 export default function TaskModal({
   open,
@@ -31,9 +40,13 @@ export default function TaskModal({
 
   projectId,
 }) {
-  const [form, setForm] = React.useState(defaultForm);
+  const [form, setForm] = React.useState(createEmptyForm);
+  const [assigneePick, setAssigneePick] = React.useState("");
+  const [formError, setFormError] = React.useState("");
 
   React.useEffect(() => {
+    setFormError("");
+
     if (selectedTask) {
       setForm({
         title: selectedTask.title || "",
@@ -42,18 +55,25 @@ export default function TaskModal({
 
         assignees: selectedTask.assignees?.map((u) => u._id) || [],
 
-        type: selectedTask.type || "Feature",
+        type: selectedTask.type || "",
 
-        status: selectedTask.status || "To Do",
+        status: selectedTask.status || "",
 
-        priority: selectedTask.priority || "None",
+        priority: selectedTask.priority || "",
       });
     } else {
-      setForm(defaultForm);
+      setForm(createEmptyForm());
     }
-  }, [selectedTask]);
+    setAssigneePick("");
+  }, [selectedTask, open]);
+
+  const handleClose = () => {
+    setFormError("");
+    setOpen(false);
+  };
 
   const handleChange = (e) => {
+    setFormError("");
     setForm({
       ...form,
 
@@ -62,8 +82,9 @@ export default function TaskModal({
   };
 
   const handleAddAssignee = (userId) => {
-    if (form.assignees.includes(userId)) return;
+    if (!userId || form.assignees.includes(userId)) return;
 
+    setFormError("");
     setForm({
       ...form,
 
@@ -79,7 +100,24 @@ export default function TaskModal({
     });
   };
 
+  const isFormValid = () => {
+    const titleOk = form.title.trim().length > 0;
+    const descOk = form.description.trim().length > 0;
+    const statusOk = Boolean(form.status);
+    const typeOk = Boolean(form.type);
+    const priorityOk = Boolean(form.priority);
+
+    return titleOk && descOk && statusOk && typeOk && priorityOk;
+  };
+
   const handleSubmit = async () => {
+    if (!isFormValid()) {
+      setFormError(VALIDATION_MESSAGE);
+      return;
+    }
+
+    setFormError("");
+
     try {
       if (selectedTask) {
         const res = await fetch(
@@ -125,9 +163,7 @@ export default function TaskModal({
         setTasks([newTask, ...tasks]);
       }
 
-      setOpen(false);
-
-      setForm(defaultForm);
+      handleClose();
     } catch (err) {
       console.error(err);
     }
@@ -144,155 +180,251 @@ export default function TaskModal({
 
       setTasks(tasks.filter((t) => t._id !== selectedTask._id));
 
-      setOpen(false);
+      handleClose();
     } catch (err) {
       console.error(err);
     }
   };
 
+  const availableMembers = members.filter(
+    (m) => !form.assignees.includes(m._id),
+  );
+
   return (
-    <Dialog open={open} onClose={() => setOpen(false)} fullWidth maxWidth="sm">
-      <DialogTitle>
-        {selectedTask ? "Edit Task" : "Create Task"}
+    <Dialog
+      open={open}
+      onClose={handleClose}
+      fullWidth
+      maxWidth="sm"
+      slotProps={{
+        paper: {
+          elevation: 0,
+          sx: {
+            border: "1px solid",
+            borderColor: "grey.200",
+            borderRadius: 3,
+          },
+        },
+      }}
+    >
+      <DialogTitle
+        sx={{
+          pr: 6,
+          pb: 1,
+        }}
+      >
+        <Typography variant="h5" fontWeight={600} color="grey.900">
+          {selectedTask ? "Edit Task" : "Create Task"}
+        </Typography>
 
         <IconButton
-          onClick={() => setOpen(false)}
+          onClick={handleClose}
           sx={{
             position: "absolute",
             right: 8,
             top: 8,
           }}
+          aria-label="close"
         >
           <CloseIcon />
         </IconButton>
       </DialogTitle>
 
-      <DialogContent dividers>
-        <Typography>Title</Typography>
-        <input
-          name="title"
-          value={form.title}
-          onChange={handleChange}
-          style={{
-            width: "100%",
-            marginBottom: "15px",
-          }}
-        />
+      <DialogContent dividers sx={{ pt: 2 }}>
+        <Stack spacing={2} sx={{ pt: 0.5 }}>
+          {formError ? (
+            <Alert severity="error" onClose={() => setFormError("")}>
+              {formError}
+            </Alert>
+          ) : null}
 
-        <Typography>Description</Typography>
-        <textarea
-          name="description"
-          value={form.description}
-          onChange={handleChange}
-          style={{
-            width: "100%",
-            height: "120px",
-            marginBottom: "15px",
-          }}
-        />
+          <TextField
+            required
+            name="title"
+            id="task-title-input"
+            label="Title"
+            value={form.title}
+            onChange={handleChange}
+            variant="outlined"
+            size="small"
+            fullWidth
+          />
 
-        <Typography>Assigned Users</Typography>
+          <TextField
+            required
+            name="description"
+            id="task-description-input"
+            label="Description"
+            value={form.description}
+            onChange={handleChange}
+            variant="outlined"
+            size="small"
+            fullWidth
+            multiline
+            rows={4}
+          />
 
-        <div
-          style={{
-            display: "flex",
+          <div>
+            <Typography
+              variant="body2"
+              color="text.secondary"
+              sx={{ mb: 1 }}
+            >
+              Assigned users
+            </Typography>
 
-            gap: "10px",
+            <Stack direction="row" flexWrap="wrap" gap={1}>
+              {form.assignees.map((userId) => {
+                const user = members.find((m) => m._id === userId);
 
-            flexWrap: "wrap",
+                if (!user) return null;
 
-            marginBottom: "15px",
-          }}
-        >
-          {form.assignees.map((userId) => {
-            const user = members.find((m) => m._id === userId);
+                return (
+                  <Chip
+                    key={user._id}
+                    variant="outlined"
+                    onDelete={() => handleRemoveAssignee(user._id)}
+                    avatar={
+                      <Avatar
+                        sx={{
+                          width: 24,
+                          height: 24,
+                          fontSize: "0.7rem",
+                        }}
+                      >
+                        {user.username?.[0]?.toUpperCase() ?? "?"}
+                      </Avatar>
+                    }
+                    label={user.username}
+                    sx={{ borderColor: "grey.300" }}
+                  />
+                );
+              })}
+            </Stack>
+          </div>
 
-            if (!user) return null;
+          <TextField
+            select
+            id="task-add-assignee-input"
+            label="Add assignee"
+            value={assigneePick}
+            onChange={(e) => {
+              const v = e.target.value;
+              if (v) {
+                handleAddAssignee(v);
+                setAssigneePick("");
+              }
+            }}
+            variant="outlined"
+            size="small"
+            fullWidth
+            disabled={availableMembers.length === 0}
+            SelectProps={{ displayEmpty: true }}
+          >
+            <MenuItem value="">
+              <em>
+                {availableMembers.length === 0
+                  ? "Everyone is assigned"
+                  : "Select user"}
+              </em>
+            </MenuItem>
+            {availableMembers.map((member) => (
+              <MenuItem key={member._id} value={member._id}>
+                {member.username}
+              </MenuItem>
+            ))}
+          </TextField>
 
-            return (
-              <div
-                key={user._id}
-                style={{
-                  display: "flex",
+          <TextField
+            required
+            select
+            name="type"
+            id="task-type-input"
+            label="Type"
+            value={form.type}
+            onChange={handleChange}
+            variant="outlined"
+            size="small"
+            fullWidth
+            SelectProps={{ displayEmpty: true }}
+          >
+            <MenuItem value="">
+              <em>Select type</em>
+            </MenuItem>
 
-                  alignItems: "center",
+            <MenuItem value="Feature">Feature</MenuItem>
 
-                  gap: "5px",
+            <MenuItem value="Bug">Bug</MenuItem>
 
-                  background: "#eee",
+            <MenuItem value="Improvement">Improvement</MenuItem>
+          </TextField>
 
-                  padding: "5px 10px",
+          <TextField
+            required
+            select
+            name="status"
+            id="task-status-input"
+            label="Status"
+            value={form.status}
+            onChange={handleChange}
+            variant="outlined"
+            size="small"
+            fullWidth
+            SelectProps={{ displayEmpty: true }}
+          >
+            <MenuItem value="">
+              <em>Select status</em>
+            </MenuItem>
 
-                  borderRadius: "20px",
-                }}
-              >
-                <UserAvatar name={user.username} />
+            <MenuItem value="To Do">To Do</MenuItem>
 
-                <span>{user.username}</span>
+            <MenuItem value="In Progress">In Progress</MenuItem>
 
-                <button onClick={() => handleRemoveAssignee(user._id)}>
-                  x
-                </button>
-              </div>
-            );
-          })}
-        </div>
+            <MenuItem value="In Review">In Review</MenuItem>
 
-        {/* ADD ASSIGNEE */}
-        <Typography>Add Assignee</Typography>
+            <MenuItem value="Done">Done</MenuItem>
+          </TextField>
 
-        <select onChange={(e) => handleAddAssignee(e.target.value)}>
-          <option>Select User</option>
+          <TextField
+            required
+            select
+            name="priority"
+            id="task-priority-input"
+            label="Priority"
+            value={form.priority}
+            onChange={handleChange}
+            variant="outlined"
+            size="small"
+            fullWidth
+            SelectProps={{ displayEmpty: true }}
+          >
+            <MenuItem value="">
+              <em>Select priority</em>
+            </MenuItem>
 
-          {members.map((member) => (
-            <option key={member._id} value={member._id}>
-              {member.username}
-            </option>
-          ))}
-        </select>
+            <MenuItem value="None">None</MenuItem>
 
-        <Typography>Type</Typography>
-        <select name="type" value={form.type} onChange={handleChange}>
-          <option value="Feature">Feature</option>
+            <MenuItem value="Low">Low</MenuItem>
 
-          <option value="Bug">Bug</option>
+            <MenuItem value="Medium">Medium</MenuItem>
 
-          <option value="Improvement">Improvement</option>
-        </select>
+            <MenuItem value="High">High</MenuItem>
 
-        <Typography>Status</Typography>
-        <select name="status" value={form.status} onChange={handleChange}>
-          <option value="To Do">To Do</option>
-
-          <option value="In Progress">In Progress</option>
-
-          <option value="In Review">In Review</option>
-
-          <option value="Done">Done</option>
-        </select>
-
-        <Typography>Priority</Typography>
-        <select name="priority" value={form.priority} onChange={handleChange}>
-          <option value="None">None</option>
-
-          <option value="Low">Low</option>
-
-          <option value="Medium">Medium</option>
-
-          <option value="High">High</option>
-
-          <option value="Urgent">Urgent</option>
-        </select>
+            <MenuItem value="Urgent">Urgent</MenuItem>
+          </TextField>
+        </Stack>
       </DialogContent>
 
-      <DialogActions>
+      <DialogActions sx={{ px: 3, py: 2, gap: 1 }}>
         {selectedTask && (
-          <Button color="error" onClick={handleDelete}>
+          <Button color="error" onClick={handleDelete} sx={{ mr: "auto" }}>
             Delete
           </Button>
         )}
 
-        <Button onClick={() => setOpen(false)}>Cancel</Button>
+        <Button variant="outlined" onClick={handleClose}>
+          Cancel
+        </Button>
 
         <Button variant="contained" onClick={handleSubmit}>
           {selectedTask ? "Save Changes" : "Create"}

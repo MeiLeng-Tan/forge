@@ -41,7 +41,11 @@ const createProject = async (req, res) => {
     if (err.code === 11000) {
       return res
         .status(400)
-        .json({ message: "Project Title or Key already exists." });
+        .json({
+          message: "Project Title or Key already exists.",
+          duplicate: err.keyPattern || null,
+          value: err.keyValue || null,
+        });
     }
     res.status(500).json({ err });
   }

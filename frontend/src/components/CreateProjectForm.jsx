@@ -26,6 +26,7 @@ import { useNavigate } from "react-router-dom";
 const CreateProjectForm = ({ onClose }) => {
   const navigate = useNavigate();
   const { user } = useAuth();
+  const [errorMessage, setErrorMessage] = useState("");
   const [formData, setFormData] = useState({
     projectTitle: "",
     projectKey: "",
@@ -61,14 +62,30 @@ const CreateProjectForm = ({ onClose }) => {
   };
 
   const handleChange = (evt) => {
+    setErrorMessage("");
     setFormData({ ...formData, [evt.target.name]: evt.target.value });
   };
 
   const handleSubmit = async (evt) => {
     evt.preventDefault();
 
+    const normalizedTitle = formData.projectTitle.trim();
+    const normalizedKey = formData.projectKey.trim().toUpperCase();
+
+    if (
+      !normalizedTitle ||
+      !normalizedKey ||
+      !formData.description.trim() ||
+      !formData.targetDate
+    ) {
+      setErrorMessage("Please fill in compulsory field.");
+      return;
+    }
+
     const projectData = {
       ...formData,
+      projectTitle: normalizedTitle,
+      projectKey: normalizedKey,
       projectLead: user._id,
       members: formData.members.map((member) => member._id),
       targetDate: formData.targetDate
@@ -76,13 +93,17 @@ const CreateProjectForm = ({ onClose }) => {
         : null,
     };
     try {
+      console.log("Creating project payload:", projectData);
       const response = await createProject(projectData);
       console.log("Project created successfully", response.data);
       onClose();
     } catch (err) {
-      console.error(
-        "Failed to create project",
-        err.response?.data || err.message,
+      console.error("Failed to create project", err.response?.data || err.message);
+      setErrorMessage(
+        err?.response?.data?.value
+          ? `${err?.response?.data?.message} (${JSON.stringify(err?.response?.data?.value)})`
+          : err?.response?.data?.message ||
+          "Failed to create project. Please try again.",
       );
     }
   };
@@ -118,6 +139,8 @@ const CreateProjectForm = ({ onClose }) => {
           autoComplete="off"
           onSubmit={handleSubmit}
         >
+          {errorMessage ? <Alert severity="error">{errorMessage}</Alert> : null}
+
           <TextField
             required
             name="projectTitle"
@@ -215,7 +238,8 @@ const CreateProjectForm = ({ onClose }) => {
               label="Target Date"
               value={formData.targetDate}
               onChange={(newValue) =>
-                setFormData((prev) => ({ ...prev, targetDate: newValue }))
+                (setErrorMessage(""),
+                setFormData((prev) => ({ ...prev, targetDate: newValue })))
               }
             />
           </LocalizationProvider>

@@ -5,14 +5,28 @@ const app = express();
 const mongoose = require("mongoose");
 const logger = require("morgan");
 const cors = require("cors");
+const Project = require("./models/project");
 const authRouter = require("./routes/auth-routes");
 const projectRouter = require("./routes/projectRoutes");
 const taskRoutes = require("./routes/taskRoutes");
 
 mongoose.connect(process.env.MONGODB_URI);
 
-mongoose.connection.on("connected", () => {
+mongoose.connection.on("connected", async () => {
   console.log(`Connected to MongoDB ${mongoose.connection.name}.`);
+
+  // Hotfix: drop legacy unique index on `projectName` (causes 11000 with {projectName: null})
+  try {
+    const indexes = await Project.collection.indexes();
+    const legacy = indexes.find((idx) => idx?.key?.projectName === 1);
+    if (legacy?.name) {
+      await Project.collection.dropIndex(legacy.name);
+      console.log(`Dropped legacy index: ${legacy.name}`);
+    }
+  } catch (err) {
+    // Non-fatal: app should still start even if index doesn't exist
+    console.warn("Index cleanup skipped:", err.message || err);
+  }
 });
 
 app.use(cors());
