@@ -76,9 +76,7 @@ export default function SignUp() {
         }}
       >
         <Box mb={2} textAlign="center">
-          <RouterLink to="/projects">
-            <img src={forgeLogo} alt="Forge Logo" style={{ height: 36 }} />
-          </RouterLink>
+          <img src={forgeLogo} alt="Forge Logo" style={{ height: 36 }} />
         </Box>
         <Typography variant="h5" fontWeight={700} color="text.primary" mb={0.5}>
           Create your account

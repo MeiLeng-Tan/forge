@@ -73,9 +73,7 @@ export default function SignIn() {
         }}
       >
         <Box mb={3}>
-          <RouterLink to="/projects">
-            <img src={forgeLogo} alt="Forge Logo" style={{ height: 40 }} />
-          </RouterLink>
+          <img src={forgeLogo} alt="Forge Logo" style={{ height: 40 }} />
         </Box>
         <Typography variant="h5" fontWeight={700} color="text.primary" mb={0.5}>
           Welcome back
