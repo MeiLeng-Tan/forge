@@ -22,19 +22,9 @@ function boardCollisionDetection(args) {
   return rectIntersection(args);
 }
 
-const columns = [
-  "To Do",
-  "In Progress",
-  "In Review",
-  "Done",
-];
+const columns = ["To Do", "In Progress", "In Review", "Done"];
 
-function DroppableColumn({
-  columnId,
-  title,
-  columnTasks,
-  onTaskClick,
-}) {
+function DroppableColumn({ columnId, title, columnTasks, onTaskClick }) {
   const theme = useTheme();
   const isDark = theme.palette.mode === "dark";
 
@@ -84,30 +74,20 @@ function DroppableColumn({
       </h3>
 
       {(columnTasks || []).map((task) => (
-        <TaskCard
-          key={task._id}
-          task={task}
-          onClick={onTaskClick}
-        />
+        <TaskCard key={task._id} task={task} onClick={onTaskClick} />
       ))}
     </div>
   );
 }
 
-export default function KanbanBoard({
-  tasks,
-  setTasks,
-  onTaskClick,
-}) {
+export default function KanbanBoard({ tasks, setTasks, onTaskClick }) {
   const [grouped, setGrouped] = useState({});
 
   useEffect(() => {
     const map = {};
 
     columns.forEach((col) => {
-      map[col] = tasks.filter(
-        (t) => t.status === col
-      );
+      map[col] = tasks.filter((t) => t.status === col);
     });
 
     setGrouped(map);
@@ -120,9 +100,7 @@ export default function KanbanBoard({
       return key;
     }
 
-    const targetTask = tasks.find(
-      (t) => String(t._id) === key
-    );
+    const targetTask = tasks.find((t) => String(t._id) === key);
 
     return targetTask ? targetTask.status : null;
   };
@@ -147,37 +125,32 @@ export default function KanbanBoard({
 
     if (!newStatus) return;
 
-    const task = tasks.find(
-      (t) => String(t._id) === taskId
-    );
+    const task = tasks.find((t) => String(t._id) === taskId);
 
     if (!task) return;
 
     if (task.status === newStatus) return;
 
     const updatedTasks = tasks.map((t) =>
-      String(t._id) === taskId
-        ? { ...t, status: newStatus }
-        : t
+      String(t._id) === taskId ? { ...t, status: newStatus } : t,
     );
 
     setTasks(updatedTasks);
 
     try {
       await fetch(
-        `http://localhost:3000/api/tasks/${taskId}`,
+        `${import.meta.env.VITE_BACK_END_SERVER_URL}/api/tasks/${taskId}`,
         {
           method: "PATCH",
 
           headers: {
-            "Content-Type":
-              "application/json",
+            "Content-Type": "application/json",
           },
 
           body: JSON.stringify({
             status: newStatus,
           }),
-        }
+        },
       );
     } catch (err) {
       console.error(err);
@@ -187,9 +160,7 @@ export default function KanbanBoard({
   return (
     <DndContext
       collisionDetection={boardCollisionDetection}
-      onDragStart={({ active }) =>
-        setActiveId(active.id)
-      }
+      onDragStart={({ active }) => setActiveId(active.id)}
       onDragCancel={() => setActiveId(null)}
       onDragEnd={handleDragEnd}
     >
@@ -212,9 +183,7 @@ export default function KanbanBoard({
       </div>
 
       <DragOverlay dropAnimation={null}>
-        {activeTask ? (
-          <TaskCardPreview task={activeTask} />
-        ) : null}
+        {activeTask ? <TaskCardPreview task={activeTask} /> : null}
       </DragOverlay>
     </DndContext>
   );

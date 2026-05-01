@@ -41,7 +41,7 @@ export default function TaskPage() {
 
   useEffect(() => {
     fetch(
-      `http://localhost:3000/api/tasks/${projectId}`
+      `${import.meta.env.VITE_BACK_END_SERVER_URL}/api/tasks/${projectId}`
     )
       .then((res) => res.json())
       .then((data) => setTasks(data))
@@ -52,7 +52,7 @@ export default function TaskPage() {
     const token = localStorage.getItem("token");
 
     fetch(
-      `http://localhost:3000/api/projects/${projectId}/members`,
+      `${import.meta.env.VITE_BACK_END_SERVER_URL}/api/projects/${projectId}/members`,
       {
         headers: {
           Authorization: `Bearer ${token}`,
