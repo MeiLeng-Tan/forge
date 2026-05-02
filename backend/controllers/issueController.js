@@ -32,7 +32,7 @@ exports.deleteTask = async (req,res) => {
         if (!task) return res.status(404).json({ message: "Task not found" });
 
         if (
-            task.assignee?.toString() !==
+            task.assignees[0]?.toString() !==
             req.user.userId
         ) {
             return res.status(403).json({ message: "Only the creator can delete this task" })
