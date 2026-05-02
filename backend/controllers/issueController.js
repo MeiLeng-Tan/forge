@@ -33,7 +33,7 @@ exports.deleteTask = async (req,res) => {
 
         if (
             task.assignee?.toString() !==
-            req.body.userId
+            req.user.userId
         ) {
             return res.status(403).json({ message: "Only the creator can delete this task" })
         }
